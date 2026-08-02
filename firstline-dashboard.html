@@ -850,7 +850,7 @@
     });
   }
 
-  if (isRealSession && realClient.status === 'active') {
+  if (isRealSession && (realClient.status === 'active' || realClient.status === 'past_due')) {
     var billingRow = document.getElementById('billingLinkRow');
     billingRow.style.display = 'block';
     document.getElementById('manageBillingBtn').addEventListener('click', function () {
