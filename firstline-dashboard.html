@@ -311,7 +311,7 @@
   <header class="nav">
     <div class="wrap nav-inner">
       <span class="logo">Firstline <span class="dot"></span></span>
-      <button class="btn btn-outline" onclick="window.location.href='firstline-landing.html'">Switch plan</button>
+      <button class="btn btn-outline" id="topbarActionBtn">Switch plan</button>
     </div>
   </header>
 
@@ -335,7 +335,7 @@
         <div class="plan-header">
           <h1 id="ovBizName">Riverside Plumbing <span style="color:var(--cream-2); font-weight:400;">(sample)</span></h1>
           <div class="sub" id="ovPlanLine">Starter plan</div>
-          <div class="status-badge"><span class="chip"></span> Active (demo)</div>
+          <div class="status-badge" id="statusBadge"><span class="chip"></span> Active (demo)</div>
         </div>
 
         <div class="quick-stats">
@@ -473,6 +473,7 @@
         </div>
         <div class="block">
           <h3>Recent leads</h3>
+          <div id="leadsContainer">
           <div class="lead-item">
             <div class="lead-top"><span class="caller">Caller ending 8823</span><span class="lead-status booked">Booked</span></div>
             <div class="lead-note">Burst pipe, needs someone today — booked for 4:30pm.</div>
@@ -485,8 +486,9 @@
             <div class="lead-top"><span class="caller">Caller ending 2290</span><span class="lead-status">New</span></div>
             <div class="lead-note">Missed call 10 minutes ago — automatic text-back already sent.</div>
           </div>
+          </div>
         </div>
-        <p class="demo-note">Sample leads shown for now — once you're live, this fills with your real calls.</p>
+        <p class="demo-note" id="leadsDemoNote">Sample leads shown for now — once you're live, this fills with your real calls.</p>
       </section>
 
       <section class="panel" data-panel="chatWidget">
@@ -646,7 +648,9 @@
 </div>
 
 <script>
-(function () {
+(async function () {
+  var PLAN_LABELS = { starter: 'Starter', growth: 'Growth', full: 'Full Service' };
+
   // Mirrors firstline-backend/src/plans.js — keep these two in sync if plan
   // features ever change, since this static page can't call the real backend.
   var PLANS = {
@@ -698,32 +702,124 @@
     return id;
   }
 
-  // ---------- Which plan does this visitor get? ----------
-  // You only reach a dashboard by clicking a plan on the homepage first
-  // (firstline-landing.html links here as ?plan=starter/growth/full). That
-  // choice is remembered so reloading keeps you on the same plan — there's
-  // no free switching between plans from inside the dashboard itself.
+  // ---------- Real login session, if any ----------
+  // Arrives as ?session=<token> right after clicking a magic-link email
+  // (see /auth/verify in server.js). Stored in localStorage (not a cookie —
+  // this page and the API run on different origins, and cross-origin
+  // cookies are unreliable, especially opening this file locally) and sent
+  // as a Bearer token on every authenticated request from here on.
   var params = new URLSearchParams(window.location.search);
-  var queryPlan = params.get('plan');
-  var planKey;
-  if (PLANS[queryPlan]) {
-    planKey = queryPlan;
-    storageSet('fl_selected_plan', planKey);
-  } else {
-    planKey = storageGet('fl_selected_plan');
+  var incomingSession = params.get('session');
+  if (incomingSession) {
+    storageSet('fl_session_token', incomingSession);
+    window.history.replaceState({}, '', window.location.pathname + window.location.hash);
   }
 
-  if (!PLANS[planKey]) {
-    document.getElementById('gateScreen').style.display = 'flex';
-    return; // no plan selected yet — stop here, don't init the dashboard
+  var sessionToken = storageGet('fl_session_token');
+  var realClient = null;
+  var isRealSession = false;
+
+  if (sessionToken) {
+    try {
+      var meRes = await fetch(BACKEND_API_URL + '/api/me', {
+        headers: { 'Authorization': 'Bearer ' + sessionToken }
+      });
+      if (meRes.ok) {
+        realClient = await meRes.json();
+        isRealSession = true;
+      } else {
+        storageSet('fl_session_token', ''); // expired/invalid — stop sending it
+      }
+    } catch (e) { /* backend unreachable right now — fall back to preview mode below */ }
+  }
+
+  // ---------- Which plan does this visitor get? ----------
+  // Logged-in clients get their real plan from the account above. Everyone
+  // else only reaches a dashboard by clicking a plan on the homepage first
+  // (firstline-landing.html links here as ?plan=starter/growth/full) — that
+  // choice is remembered so reloading keeps the same plan, with no free
+  // switching between plans from inside the preview dashboard itself.
+  var planKey, plan;
+
+  if (isRealSession) {
+    planKey = realClient.planName;
+    plan = { label: PLAN_LABELS[planKey] || realClient.planName, features: realClient.features };
+  } else {
+    var queryPlan = params.get('plan');
+    if (PLANS[queryPlan]) {
+      planKey = queryPlan;
+      storageSet('fl_selected_plan', planKey);
+    } else {
+      planKey = storageGet('fl_selected_plan');
+    }
+
+    if (!PLANS[planKey]) {
+      document.getElementById('gateScreen').style.display = 'flex';
+      return; // no plan selected yet — stop here, don't init the dashboard
+    }
+    plan = PLANS[planKey];
   }
 
   document.getElementById('dashboardShell').style.display = '';
-  var plan = PLANS[planKey];
   var storagePrefix = 'fl_dash_' + planKey + '_';
 
   document.title = 'Firstline — ' + plan.label + ' Dashboard';
   document.getElementById('ovPlanLine').textContent = plan.label + ' plan';
+
+  if (isRealSession) {
+    var STATUS_LABELS = { active: 'Active', past_due: 'Payment issue — update billing', cancelled: 'Subscription cancelled' };
+    document.getElementById('ovBizName').textContent = realClient.businessName || realClient.email;
+    document.getElementById('statusBadge').innerHTML = '<span class="chip"></span> ' + (STATUS_LABELS[realClient.status] || realClient.status);
+
+    // Real leads replace the sample cards — a cancelled/past-due client
+    // never had features zeroed out server-side, so gate on status too,
+    // not just the feature flag, otherwise a lapsed account would still see
+    // this as if it were live.
+    if (realClient.status === 'active' && realClient.features.missedCallTextBack) {
+      fetch(BACKEND_API_URL + '/api/my-leads', { headers: { 'Authorization': 'Bearer ' + sessionToken } })
+        .then(function (res) { return res.ok ? res.json() : null; })
+        .then(function (data) {
+          var container = document.getElementById('leadsContainer');
+          var note = document.getElementById('leadsDemoNote');
+          if (!data || !container) return;
+          note.style.display = 'none';
+
+          if (data.leads.length === 0) {
+            container.innerHTML = '<p class="demo-note">No calls yet — this fills in as soon as a customer reaches out.</p>';
+            return;
+          }
+          function escapeHtml(str) {
+            var div = document.createElement('div');
+            div.textContent = String(str);
+            return div.innerHTML;
+          }
+
+          container.innerHTML = data.leads.map(function (lead) {
+            var lastMessage = (lead.conversation || []).slice(-1)[0];
+            var preview = lastMessage ? lastMessage.content : 'No messages yet.';
+            var statusClass = lead.status === 'booked' ? 'lead-status booked' : 'lead-status';
+            var callerTail = lead.caller_number ? lead.caller_number.slice(-4) : '----';
+            return '<div class="lead-item"><div class="lead-top"><span class="caller">Caller ending ' + escapeHtml(callerTail) +
+              '</span><span class="' + statusClass + '">' + escapeHtml(lead.status) + '</span></div><div class="lead-note">' +
+              escapeHtml(preview) + '</div></div>';
+          }).join('');
+        })
+        .catch(function () { /* leads just don't refresh this load — not fatal */ });
+    }
+  }
+
+  var topbarActionBtn = document.getElementById('topbarActionBtn');
+  if (isRealSession) {
+    topbarActionBtn.textContent = 'Log out';
+    topbarActionBtn.addEventListener('click', function () {
+      storageSet('fl_session_token', '');
+      window.location.href = 'firstline-landing.html';
+    });
+  } else {
+    topbarActionBtn.addEventListener('click', function () {
+      window.location.href = 'firstline-landing.html';
+    });
+  }
 
   // ---------- Feature checklist (overview) ----------
   var featureList = document.getElementById('featureList');
