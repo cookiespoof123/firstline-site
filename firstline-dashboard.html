@@ -744,7 +744,15 @@
 
   if (isRealSession) {
     planKey = realClient.planName;
-    plan = { label: PLAN_LABELS[planKey] || realClient.planName, features: realClient.features };
+    // A cancelled/past_due client's `features` never gets zeroed out
+    // server-side (the row just gets a status change, see
+    // stripeWebhook.js) — so gating has to check status here too, not just
+    // the raw flags, otherwise a lapsed account would still see every
+    // section as unlocked and editable.
+    var effectiveFeatures = realClient.status === 'active'
+      ? realClient.features
+      : Object.keys(realClient.features).reduce(function (acc, key) { acc[key] = false; return acc; }, {});
+    plan = { label: PLAN_LABELS[planKey] || realClient.planName, features: effectiveFeatures };
   } else {
     var queryPlan = params.get('plan');
     if (PLANS[queryPlan]) {
