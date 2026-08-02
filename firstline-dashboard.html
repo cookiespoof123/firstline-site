@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Firstline — Dashboard</title>
+<meta name="description" content="Manage the Firstline features included in your plan.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #14121F;
+    --ink-light: #1D1930;
+    --cream: #F2EFFB;
+    --cream-2: #E3DDF3;
+    --rust: #7C5CFC;
+    --rust-light: #9B87FF;
+    --gold: #4C8DFF;
+    --border-dark: #332C4D;
+    --border-cream: #D6CEEC;
+
+    --serif: 'Fraunces', serif;
+    --sans: 'Inter', sans-serif;
+    --mono: 'JetBrains Mono', monospace;
+
+    --nav-height: 84px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--ink);
+    color: var(--cream);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    font-size: 16.5px;
+  }
+
+  a { color: inherit; text-decoration: none; }
+  h1, h2, h3 { font-family: var(--serif); font-weight: 500; line-height: 1.2; }
+  button { font-family: var(--sans); cursor: pointer; }
+
+  .wrap { max-width: 1640px; margin: 0 auto; padding: 0 2.5rem; }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 0.8rem 1.5rem;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    cursor: pointer;
+  }
+  .btn-primary { background: var(--rust); color: var(--cream); }
+  .btn-primary:hover { background: var(--rust-light); }
+  .btn-outline { background: transparent; color: var(--cream); border-color: var(--border-dark); }
+  .btn-outline:hover { border-color: var(--gold); color: var(--gold); }
+
+  /* ---------- Gate screen (no plan selected yet) ---------- */
+  .gate-screen {
+    display: none;
+    min-height: 100vh;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+  }
+  .gate-screen .logo { font-family: var(--serif); font-size: 1.8rem; font-weight: 600; margin-bottom: 2.5rem; }
+  .gate-screen .logo .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--rust); display: inline-block; margin-left: 0.3rem; }
+  .gate-screen h1 { font-size: 2.1rem; margin-bottom: 0.8rem; max-width: 26ch; }
+  .gate-screen p { color: var(--cream-2); font-size: 1.05rem; margin-bottom: 1.8rem; max-width: 42ch; }
+
+  /* ---------- Top bar ---------- */
+  header.nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--ink);
+    border-bottom: 1px solid var(--border-dark);
+    height: var(--nav-height);
+    display: flex;
+    align-items: center;
+  }
+  .nav-inner { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; }
+  .logo { font-family: var(--serif); font-size: 1.55rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; color: var(--cream); }
+  .logo .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--rust); display: inline-block; }
+
+  /* ---------- Layout: sidebar + content, side by side, fills the screen ---------- */
+  .layout {
+    display: flex;
+    align-items: flex-start;
+    gap: 3.5rem;
+    padding: 3.5rem 0 6rem;
+    min-height: calc(100vh - var(--nav-height));
+  }
+
+  .sidebar {
+    width: 270px;
+    flex-shrink: 0;
+    position: sticky;
+    top: calc(var(--nav-height) + 2.5rem);
+  }
+  .sidebar-group-label {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--cream-2);
+    opacity: 0.6;
+    padding: 0.7rem 0.8rem 0.5rem;
+  }
+  .nav-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6rem;
+    padding: 0.75rem 0.8rem;
+    border-radius: 6px;
+    font-size: 0.98rem;
+    color: var(--cream-2);
+    cursor: pointer;
+    margin-bottom: 0.15rem;
+  }
+  .nav-item:hover { background: var(--ink-light); color: var(--cream); }
+  .nav-item.active { background: var(--ink-light); color: var(--cream); border-left: 3px solid var(--rust-light); }
+  .nav-item.locked { opacity: 0.45; }
+  .nav-item .lock-mark { font-family: var(--mono); font-size: 0.7rem; color: var(--gold); }
+
+  .content { flex: 1; min-width: 0; }
+  .panel { display: none; }
+  .panel.active { display: block; }
+  .panel h2 { font-size: 2rem; margin-bottom: 0.4rem; }
+  .panel .panel-sub { color: var(--cream-2); font-size: 1rem; margin-bottom: 2.2rem; }
+
+  .plan-header { margin-bottom: 2rem; }
+  .plan-header h1 { font-size: 2.5rem; }
+  .plan-header .sub { color: var(--cream-2); font-size: 1rem; margin-top: 0.4rem; }
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: var(--mono);
+    font-size: 0.76rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--gold);
+    margin-top: 0.7rem;
+  }
+  .status-badge .chip { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); }
+
+  .block {
+    background: var(--ink-light);
+    border: 1px solid var(--border-dark);
+    border-radius: 12px;
+    padding: 2.2rem 2.4rem;
+    margin-bottom: 1.6rem;
+  }
+  .block h3 { font-size: 1.2rem; margin-bottom: 1.3rem; }
+  .block-note { font-size: 0.85rem; color: var(--cream-2); opacity: 0.75; margin-top: -0.6rem; margin-bottom: 1.2rem; }
+
+  /* ---------- Two-column field grid so forms use the extra width ---------- */
+  .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 1.8rem; }
+
+  /* ---------- Quick stat tiles ---------- */
+  .quick-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; margin-bottom: 1.6rem; }
+  .quick-stat {
+    background: var(--ink-light);
+    border: 1px solid var(--border-dark);
+    border-radius: 12px;
+    padding: 1.6rem 1.4rem;
+    text-align: center;
+  }
+  .quick-stat .n { font-family: var(--mono); font-size: 2rem; font-weight: 600; color: var(--rust-light); }
+  .quick-stat .l { font-size: 0.85rem; color: var(--cream-2); margin-top: 0.3rem; }
+
+  /* ---------- Checklist ---------- */
+  .checklist { list-style: none; display: flex; flex-direction: column; gap: 0.9rem; }
+  .checklist li { display: flex; align-items: center; gap: 0.8rem; font-size: 0.96rem; }
+  .checklist .tick { width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 0.75rem; font-weight: 700; }
+  .checklist li.done .tick { background: var(--rust); color: var(--cream); }
+  .checklist li.todo .tick { border: 1px solid var(--border-dark); color: transparent; }
+  .checklist li.done span.txt { color: var(--cream); }
+  .checklist li.todo span.txt { color: var(--cream-2); }
+
+  /* ---------- Forms ---------- */
+  .field { margin-bottom: 1.3rem; }
+  .field label { display: block; font-size: 0.85rem; color: var(--cream-2); margin-bottom: 0.45rem; }
+  .field input[type="text"], .field input[type="email"], .field input[type="tel"],
+  .field input[type="number"], .field input[type="time"], .field input[type="color"],
+  .field select, .field textarea {
+    width: 100%;
+    background: var(--ink);
+    border: 1px solid var(--border-dark);
+    border-radius: 6px;
+    padding: 0.75rem 0.9rem;
+    color: var(--cream);
+    font-family: var(--sans);
+    font-size: 0.95rem;
+  }
+  .field input[type="color"] { padding: 0.35rem; height: 44px; cursor: pointer; }
+  .field textarea { resize: vertical; min-height: 80px; }
+  .field input:focus, .field select:focus, .field textarea:focus { outline: 1px solid var(--gold); }
+
+  .checkbox-row { display: flex; gap: 1.6rem; flex-wrap: wrap; }
+  .checkbox-row label { display: flex; align-items: center; gap: 0.5rem; font-size: 0.92rem; color: var(--cream-2); cursor: pointer; }
+  .checkbox-row input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--rust); }
+
+  .row-toggle { display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 0; margin-bottom: 1.1rem; }
+  .row-toggle .label-main { font-size: 0.98rem; color: var(--cream); }
+  .row-toggle .label-sub { font-size: 0.84rem; color: var(--cream-2); margin-top: 0.15rem; }
+
+  .switch { position: relative; display: inline-block; width: 44px; height: 25px; flex-shrink: 0; }
+  .switch input { opacity: 0; width: 0; height: 0; }
+  .switch-track { position: absolute; inset: 0; background: var(--border-dark); border-radius: 999px; }
+  .switch-track::before { content: ''; position: absolute; width: 19px; height: 19px; left: 3px; top: 3px; background: var(--cream-2); border-radius: 50%; }
+  .switch input:checked ~ .switch-track { background: var(--rust); }
+  .switch input:checked ~ .switch-track::before { transform: translateX(19px); background: var(--cream); }
+
+  .save-row { display: flex; align-items: center; gap: 1rem; }
+  .save-note { font-family: var(--mono); font-size: 0.8rem; color: var(--rust-light); opacity: 0; }
+  .save-note.show { opacity: 1; }
+
+  .code-box {
+    background: var(--ink);
+    border: 1px solid var(--border-dark);
+    border-radius: 6px;
+    padding: 1rem 1.1rem;
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    color: var(--cream-2);
+    overflow-x: auto;
+    white-space: pre;
+    margin-bottom: 0.9rem;
+  }
+
+  .feature-list { list-style: none; }
+  .feature-list li { display: flex; align-items: center; gap: 0.7rem; font-size: 0.96rem; padding: 0.6rem 0; border-bottom: 1px solid var(--border-dark); }
+  .feature-list li .mark { width: 18px; flex-shrink: 0; font-weight: 600; text-align: center; }
+  .feature-list li.included { color: var(--cream); }
+  .feature-list li.included .mark { color: var(--rust-light); }
+  .feature-list li.locked { color: var(--cream-2); opacity: 0.5; }
+
+  .lead-item { background: var(--ink); border: 1px solid var(--border-dark); border-radius: 8px; padding: 1rem 1.2rem; margin-bottom: 0.75rem; }
+  .lead-item:last-child { margin-bottom: 0; }
+  .lead-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.4rem; }
+  .lead-top .caller { font-family: var(--mono); font-size: 0.85rem; }
+  .lead-status { font-family: var(--mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.05em; padding: 0.22rem 0.6rem; border-radius: 999px; border: 1px solid var(--border-dark); color: var(--cream-2); }
+  .lead-status.booked { color: var(--rust-light); border-color: var(--rust-light); }
+  .lead-note { font-size: 0.9rem; color: var(--cream-2); }
+
+  .report-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.2rem; margin-bottom: 1.6rem; }
+  .report-stat { text-align: center; }
+  .report-stat .n { font-family: var(--mono); font-size: 1.9rem; font-weight: 600; color: var(--rust-light); }
+  .report-stat .l { font-size: 0.82rem; color: var(--cream-2); margin-top: 0.3rem; }
+
+  .demo-note { font-family: var(--mono); font-size: 0.78rem; color: var(--cream-2); opacity: 0.65; }
+
+  .upgrade-block {
+    background: var(--ink-light);
+    border: 1px dashed var(--border-dark);
+    border-radius: 12px;
+    padding: 3rem 2rem;
+    text-align: center;
+  }
+  .upgrade-block h3 { font-size: 1.35rem; margin-bottom: 0.7rem; }
+  .upgrade-block p { color: var(--cream-2); font-size: 0.98rem; margin-bottom: 1.6rem; max-width: 44ch; margin-left: auto; margin-right: auto; }
+  .upgrade-actions { display: flex; gap: 0.8rem; justify-content: center; flex-wrap: wrap; }
+
+  /* ---------- Mobile: sidebar becomes a horizontal tab row above content ---------- */
+  @media (max-width: 1000px) {
+    .field-grid { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 860px) {
+    .layout { flex-direction: column; gap: 1.5rem; padding: 1.5rem 0 4rem; }
+    .sidebar {
+      width: 100%;
+      position: static;
+      display: flex;
+      overflow-x: auto;
+      gap: 0.4rem;
+      padding-bottom: 0.4rem;
+    }
+    .sidebar-group-label { display: none; }
+    .nav-item { white-space: nowrap; margin-bottom: 0; border-left: none; }
+    .nav-item.active { border-left: none; border-bottom: 3px solid var(--rust-light); }
+    .quick-stats { grid-template-columns: 1fr 1fr; }
+    .report-stats { grid-template-columns: 1fr 1fr; row-gap: 1rem; }
+    .block { padding: 1.6rem 1.6rem; }
+    .plan-header h1 { font-size: 1.9rem; }
+    .panel h2 { font-size: 1.6rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="gate-screen" id="gateScreen">
+  <div class="logo">Firstline <span class="dot"></span></div>
+  <h1>Pick a plan to see your dashboard</h1>
+  <p>You haven't selected a Firstline plan yet on this browser. Choose a plan on the homepage to unlock its dashboard.</p>
+  <a class="btn btn-primary" href="firstline-landing.html#pricing">See plans</a>
+</div>
+
+<div id="dashboardShell" style="display:none;">
+
+  <header class="nav">
+    <div class="wrap nav-inner">
+      <span class="logo">Firstline <span class="dot"></span></span>
+      <button class="btn btn-outline" onclick="window.location.href='firstline-landing.html'">Switch plan</button>
+    </div>
+  </header>
+
+  <div class="wrap layout">
+    <nav class="sidebar" id="sidebar">
+      <div class="sidebar-group-label">Dashboard</div>
+      <div class="nav-item" data-section="overview">Overview</div>
+      <div class="sidebar-group-label">Features</div>
+      <div class="nav-item" data-section="website">Website</div>
+      <div class="nav-item" data-section="reviewRequests">Reviews</div>
+      <div class="nav-item" data-section="missedCallTextBack">Text-back</div>
+      <div class="nav-item" data-section="chatWidget">Chat widget</div>
+      <div class="nav-item" data-section="followUpSequences">Follow-ups</div>
+      <div class="nav-item" data-section="leadScoringAlerts">Lead alerts</div>
+      <div class="nav-item" data-section="weeklyReport">Weekly report</div>
+    </nav>
+
+    <main class="content">
+
+      <section class="panel" data-panel="overview">
+        <div class="plan-header">
+          <h1 id="ovBizName">Riverside Plumbing <span style="color:var(--cream-2); font-weight:400;">(sample)</span></h1>
+          <div class="sub" id="ovPlanLine">Starter plan</div>
+          <div class="status-badge"><span class="chip"></span> Active (demo)</div>
+        </div>
+
+        <div class="quick-stats">
+          <div class="quick-stat"><div class="n">12</div><div class="l">Leads this week</div></div>
+          <div class="quick-stat"><div class="n">8s</div><div class="l">Avg response time</div></div>
+          <div class="quick-stat"><div class="n">4</div><div class="l">Reviews requested</div></div>
+        </div>
+
+        <div class="block">
+          <h3>Your plan includes</h3>
+          <ul class="feature-list" id="featureList"></ul>
+        </div>
+
+        <div class="block">
+          <h3>Getting started</h3>
+          <ul class="checklist">
+            <li class="done"><span class="tick">✓</span><span class="txt">Business details added</span></li>
+            <li class="done"><span class="tick">✓</span><span class="txt">Forwarding number set</span></li>
+            <li class="todo"><span class="tick"></span><span class="txt">Connect your Google Business profile</span></li>
+            <li class="todo"><span class="tick"></span><span class="txt">Invite your team (optional)</span></li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="panel" data-panel="website">
+        <h2>Website</h2>
+        <p class="panel-sub">Your hosted site's basic details.</p>
+        <div class="block">
+          <div class="field-grid">
+            <div class="field"><label>Business name</label><input type="text" data-key="website_businessName" value="Riverside Plumbing"></div>
+            <div class="field"><label>Tagline</label><input type="text" data-key="website_tagline" value="Fast, honest plumbing — same-day call-outs"></div>
+          </div>
+          <div class="field-grid">
+            <div class="field"><label>Contact email</label><input type="email" data-key="website_email" value="hello@riversideplumbing.example"></div>
+            <div class="field"><label>Contact phone</label><input type="tel" data-key="website_phone" value="020 7946 0000"></div>
+          </div>
+          <div class="field-grid">
+            <div class="field"><label>Business hours</label><input type="text" data-key="website_hours" value="Mon–Fri 8am–6pm, Sat 9am–1pm"></div>
+            <div class="field"><label>Service area</label><input type="text" data-key="website_serviceArea" value="Woking and surrounding areas"></div>
+          </div>
+          <div class="field"><label>Domain</label><input type="text" data-key="website_domain" value="riversideplumbing.co.uk"></div>
+          <div class="row-toggle">
+            <div>
+              <div class="label-main">Show "Powered by Firstline" badge</div>
+              <div class="label-sub">A small credit link in your site footer</div>
+            </div>
+            <label class="switch"><input type="checkbox" data-toggle="website_showBadge" checked><span class="switch-track"></span></label>
+          </div>
+          <div class="save-row">
+            <button class="btn btn-primary" data-save="website">Save changes</button>
+            <span class="save-note" data-note="website">Saved ✓</span>
+          </div>
+        </div>
+        <div class="block">
+          <h3>Logo</h3>
+          <p class="block-note">PNG or SVG, transparent background works best.</p>
+          <button class="btn btn-outline" disabled>Upload logo (coming soon)</button>
+        </div>
+        <p class="demo-note">Your published site: firstline.agency/sites/riverside-plumbing (coming soon)</p>
+      </section>
+
+      <section class="panel" data-panel="reviewRequests">
+        <h2>Automatic review requests</h2>
+        <p class="panel-sub">Ask happy customers for a review without lifting a finger.</p>
+        <div class="quick-stats" style="grid-template-columns: repeat(2, 1fr);">
+          <div class="quick-stat"><div class="n">14</div><div class="l">Requested this month</div></div>
+          <div class="quick-stat"><div class="n">6</div><div class="l">New reviews earned</div></div>
+        </div>
+        <div class="block">
+          <div class="row-toggle">
+            <div>
+              <div class="label-main">Send requests automatically</div>
+              <div class="label-sub">Turn this off to pause requests without losing your settings</div>
+            </div>
+            <label class="switch"><input type="checkbox" data-toggle="reviewRequests_enabled" checked><span class="switch-track"></span></label>
+          </div>
+          <div class="row-toggle">
+            <div>
+              <div class="label-main">Only request after jobs marked complete</div>
+            </div>
+            <label class="switch"><input type="checkbox" data-toggle="reviewRequests_onlyComplete" checked><span class="switch-track"></span></label>
+          </div>
+          <div class="field"><label>Send request this many days after job completion</label><input type="number" data-key="reviewRequests_delayDays" value="1" min="0" max="30"></div>
+          <div class="field">
+            <label>Request reviews on</label>
+            <div class="checkbox-row">
+              <label><input type="checkbox" data-toggle="reviewRequests_google" checked> Google</label>
+              <label><input type="checkbox" data-toggle="reviewRequests_facebook"> Facebook</label>
+              <label><input type="checkbox" data-toggle="reviewRequests_trustpilot"> Trustpilot</label>
+            </div>
+          </div>
+          <div class="field"><label>Request message</label><textarea data-key="reviewRequests_message">Thanks for choosing us! Mind leaving a quick review? It really helps: [review link]</textarea></div>
+          <div class="save-row">
+            <button class="btn btn-primary" data-save="reviewRequests">Save changes</button>
+            <span class="save-note" data-note="reviewRequests">Saved ✓</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" data-panel="missedCallTextBack">
+        <h2>Missed-call text-back</h2>
+        <p class="panel-sub">Automatically text anyone whose call you miss.</p>
+        <div class="quick-stats" style="grid-template-columns: repeat(2, 1fr);">
+          <div class="quick-stat"><div class="n">12</div><div class="l">Leads this week</div></div>
+          <div class="quick-stat"><div class="n">8s</div><div class="l">Avg response time</div></div>
+        </div>
+        <div class="block">
+          <div class="row-toggle">
+            <div>
+              <div class="label-main">Text back missed calls</div>
+              <div class="label-sub">Off = calls just ring out like before</div>
+            </div>
+            <label class="switch"><input type="checkbox" data-toggle="missedCallTextBack_enabled" checked><span class="switch-track"></span></label>
+          </div>
+          <div class="row-toggle">
+            <div>
+              <div class="label-main">Only during business hours</div>
+              <div class="label-sub">Uses the hours set on your Website page</div>
+            </div>
+            <label class="switch"><input type="checkbox" data-toggle="missedCallTextBack_businessHoursOnly"><span class="switch-track"></span></label>
+          </div>
+          <div class="row-toggle">
+            <div>
+              <div class="label-main">Escalate to SMS if no reply in 10 minutes</div>
+            </div>
+            <label class="switch"><input type="checkbox" data-toggle="missedCallTextBack_escalate" checked><span class="switch-track"></span></label>
+          </div>
+          <div class="field"><label>Forward calls to</label><input type="tel" data-key="missedCallTextBack_forwardTo" value="07700 900000"></div>
+          <div class="field"><label>Opening text message</label><textarea data-key="missedCallTextBack_opener">Hey! Sorry we missed your call — what's going on, and how urgent is it?</textarea></div>
+          <div class="field"><label>After-hours message</label><textarea data-key="missedCallTextBack_afterHours">Thanks for calling! We're closed right now but will text you back first thing.</textarea></div>
+          <div class="save-row">
+            <button class="btn btn-primary" data-save="missedCallTextBack">Save changes</button>
+            <span class="save-note" data-note="missedCallTextBack">Saved ✓</span>
+          </div>
+        </div>
+        <div class="block">
+          <h3>Recent leads</h3>
+          <div class="lead-item">
+            <div class="lead-top"><span class="caller">Caller ending 8823</span><span class="lead-status booked">Booked</span></div>
+            <div class="lead-note">Burst pipe, needs someone today — booked for 4:30pm.</div>
+          </div>
+          <div class="lead-item">
+            <div class="lead-top"><span class="caller">Caller ending 4417</span><span class="lead-status">Qualifying</span></div>
+            <div class="lead-note">Asking about boiler service pricing — text-back in progress.</div>
+          </div>
+          <div class="lead-item">
+            <div class="lead-top"><span class="caller">Caller ending 2290</span><span class="lead-status">New</span></div>
+            <div class="lead-note">Missed call 10 minutes ago — automatic text-back already sent.</div>
+          </div>
+        </div>
+        <p class="demo-note">Sample leads shown for now — once you're live, this fills with your real calls.</p>
+      </section>
+
+      <section class="panel" data-panel="chatWidget">
+        <h2>24/7 chat widget</h2>
+        <p class="panel-sub">A chat bubble for your site that never sleeps.</p>
+        <div class="block">
+          <div class="row-toggle">
+            <div><div class="label-main">Show chat widget on my site</div></div>
+            <label class="switch"><input type="checkbox" data-toggle="chatWidget_enabled" checked><span class="switch-track"></span></label>
+          </div>
+          <div class="row-toggle">
+            <div><div class="label-main">Show on mobile</div></div>
+            <label class="switch"><input type="checkbox" data-toggle="chatWidget_mobile" checked><span class="switch-track"></span></label>
+          </div>
+          <div class="field-grid">
+            <div class="field"><label>Widget color</label><input type="color" data-key="chatWidget_color" value="#7c5cfc"></div>
+            <div class="field">
+              <label>Position</label>
+              <select data-key="chatWidget_position">
+                <option value="bottom-right" selected>Bottom right</option>
+                <option value="bottom-left">Bottom left</option>
+              </select>
+            </div>
+          </div>
+          <div class="field"><label>Greeting message</label><textarea data-key="chatWidget_greeting">Hi! Questions about a job? Ask away and we'll get right back to you.</textarea></div>
+          <div class="save-row">
+            <button class="btn btn-primary" data-save="chatWidget">Save changes</button>
+            <span class="save-note" data-note="chatWidget">Saved ✓</span>
+          </div>
+        </div>
+        <div class="block">
+          <h3>Install snippet</h3>
+          <p class="block-note">Paste this just before the closing &lt;/body&gt; tag on your site.</p>
+          <div class="code-box">&lt;script src="https://firstline.agency/widget.js" data-client="riverside-plumbing"&gt;&lt;/script&gt;</div>
+          <button class="btn btn-outline" id="copySnippetBtn">Copy snippet</button>
+        </div>
+      </section>
+
+      <section class="panel" data-panel="followUpSequences">
+        <h2>Automated follow-up sequences</h2>
+        <p class="panel-sub">Nothing left unanswered, even if a lead goes quiet.</p>
+        <div class="block">
+          <div class="row-toggle">
+            <div>
+              <div class="label-main">Pause sequence once a lead replies</div>
+            </div>
+            <label class="switch"><input type="checkbox" data-toggle="followUp_pauseOnReply" checked><span class="switch-track"></span></label>
+          </div>
+          <div class="field">
+            <label>Send via</label>
+            <select data-key="followUp_channel">
+              <option value="sms" selected>SMS</option>
+              <option value="email">Email</option>
+              <option value="both">SMS and email</option>
+            </select>
+          </div>
+        </div>
+        <div class="block">
+          <div class="row-toggle"><div><div class="label-main">Day 1 follow-up</div></div><label class="switch"><input type="checkbox" data-toggle="followUp_day1_enabled" checked><span class="switch-track"></span></label></div>
+          <div class="field"><textarea data-key="followUp_day1_message">Just checking in — still need a hand with this? Happy to sort a time that works.</textarea></div>
+          <div class="row-toggle"><div><div class="label-main">Day 3 follow-up</div></div><label class="switch"><input type="checkbox" data-toggle="followUp_day3_enabled" checked><span class="switch-track"></span></label></div>
+          <div class="field"><textarea data-key="followUp_day3_message">Following up one more time — let us know if you'd still like to get this booked in.</textarea></div>
+          <div class="row-toggle"><div><div class="label-main">Day 7 follow-up</div></div><label class="switch"><input type="checkbox" data-toggle="followUp_day7_enabled"><span class="switch-track"></span></label></div>
+          <div class="field"><textarea data-key="followUp_day7_message">No worries if the timing isn't right — reply anytime and we'll pick it back up.</textarea></div>
+          <div class="save-row">
+            <button class="btn btn-primary" data-save="followUpSequences">Save changes</button>
+            <span class="save-note" data-note="followUpSequences">Saved ✓</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" data-panel="leadScoringAlerts">
+        <h2>Lead scoring &amp; hot-lead alerts</h2>
+        <p class="panel-sub">Get a text the moment a high-value lead comes in.</p>
+        <div class="block">
+          <div class="row-toggle"><div><div class="label-main">Send hot-lead SMS alerts</div></div><label class="switch"><input type="checkbox" data-toggle="leadScoringAlerts_enabled" checked><span class="switch-track"></span></label></div>
+          <div class="row-toggle">
+            <div>
+              <div class="label-main">Also email me alerts</div>
+            </div>
+            <label class="switch"><input type="checkbox" data-toggle="leadScoringAlerts_email"><span class="switch-track"></span></label>
+          </div>
+          <div class="field-grid">
+            <div class="field"><label>Alert this number</label><input type="tel" data-key="leadScoringAlerts_phone" value="07700 900000"></div>
+            <div class="field"><label>Alert email</label><input type="email" data-key="leadScoringAlerts_emailAddress" value="hello@riversideplumbing.example"></div>
+          </div>
+          <div class="field">
+            <label>Alert me for</label>
+            <select data-key="leadScoringAlerts_threshold">
+              <option value="all">All leads</option>
+              <option value="hot" selected>Hot leads only</option>
+            </select>
+          </div>
+          <div class="field-grid">
+            <div class="field"><label>Quiet hours start</label><input type="time" data-key="leadScoringAlerts_quietStart" value="21:00"></div>
+            <div class="field"><label>Quiet hours end</label><input type="time" data-key="leadScoringAlerts_quietEnd" value="07:00"></div>
+          </div>
+          <div class="save-row">
+            <button class="btn btn-primary" data-save="leadScoringAlerts">Save changes</button>
+            <span class="save-note" data-note="leadScoringAlerts">Saved ✓</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" data-panel="weeklyReport">
+        <h2>Weekly intelligence report</h2>
+        <p class="panel-sub">Your week, in plain English — no dashboard login required to get it.</p>
+        <div class="block">
+          <div class="report-stats">
+            <div class="report-stat"><div class="n">47</div><div class="l">Leads in</div></div>
+            <div class="report-stat"><div class="n">31</div><div class="l">Booked</div></div>
+            <div class="report-stat"><div class="n">8s</div><div class="l">Avg response</div></div>
+            <div class="report-stat"><div class="n">6</div><div class="l">New reviews</div></div>
+          </div>
+          <p class="demo-note">Sample numbers shown for now — once you're live, these reflect your real activity.</p>
+        </div>
+        <div class="block">
+          <div class="row-toggle">
+            <div><div class="label-main">Email me this report weekly</div><div class="label-sub">Sent every Monday morning</div></div>
+            <label class="switch"><input type="checkbox" data-toggle="weeklyReport_enabled" checked><span class="switch-track"></span></label>
+          </div>
+          <div class="row-toggle">
+            <div><div class="label-main">Include review trend</div></div>
+            <label class="switch"><input type="checkbox" data-toggle="weeklyReport_reviewTrend" checked><span class="switch-track"></span></label>
+          </div>
+          <div class="field-grid">
+            <div class="field"><label>Send to</label><input type="email" data-key="weeklyReport_email" value="hello@riversideplumbing.example"></div>
+            <div class="field">
+              <label>Report day</label>
+              <select data-key="weeklyReport_day">
+                <option value="monday" selected>Monday</option>
+                <option value="friday">Friday</option>
+              </select>
+            </div>
+          </div>
+          <div class="save-row">
+            <button class="btn btn-primary" data-save="weeklyReport">Save changes</button>
+            <span class="save-note" data-note="weeklyReport">Saved ✓</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Locked / upgrade panel template, reused for whichever feature is locked -->
+      <section class="panel" data-panel="locked">
+        <div class="upgrade-block">
+          <h3 id="lockedTitle">Not on your plan yet</h3>
+          <p id="lockedBody">This feature isn't included on your current plan.</p>
+          <div class="upgrade-actions">
+            <a class="btn btn-primary" href="firstline-landing.html#pricing">Compare plans</a>
+            <a class="btn btn-outline" href="firstline-landing.html#cta">Book a call</a>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<script>
+(function () {
+  // Mirrors firstline-backend/src/plans.js — keep these two in sync if plan
+  // features ever change, since this static page can't call the real backend.
+  var PLANS = {
+    starter: {
+      label: 'Starter',
+      features: { website: true, reviewRequests: true, missedCallTextBack: false, chatWidget: false, followUpSequences: false, leadScoringAlerts: false, weeklyReport: false }
+    },
+    growth: {
+      label: 'Growth',
+      features: { website: true, reviewRequests: true, missedCallTextBack: true, chatWidget: true, followUpSequences: true, leadScoringAlerts: false, weeklyReport: false }
+    },
+    full: {
+      label: 'Full Service',
+      features: { website: true, reviewRequests: true, missedCallTextBack: true, chatWidget: true, followUpSequences: true, leadScoringAlerts: true, weeklyReport: true }
+    }
+  };
+
+  var FEATURE_LABELS = {
+    website: 'Website built & hosted',
+    reviewRequests: 'Automatic review requests',
+    missedCallTextBack: 'Missed-call text-back',
+    chatWidget: '24/7 chat widget',
+    followUpSequences: 'Automated follow-up sequences',
+    leadScoringAlerts: 'Lead scoring & hot-lead alerts',
+    weeklyReport: 'Weekly intelligence report'
+  };
+
+  function storageGet(key) {
+    try { return localStorage.getItem(key); } catch (e) { return null; }
+  }
+  function storageSet(key, value) {
+    try { localStorage.setItem(key, value); } catch (e) { /* not persisted this session — page still works */ }
+  }
+
+  // ---------- Real backend persistence (Supabase-backed) ----------
+  // No login yet, so settings are keyed on an anonymous device id generated
+  // once and kept in localStorage. If the backend is unreachable, saves
+  // still work locally via storageGet/storageSet above — this is a bonus
+  // layer on top, not a replacement.
+  var BACKEND_API_URL = 'https://firstline-backend.onrender.com';
+
+  function getDeviceId() {
+    var existing = storageGet('fl_device_id');
+    if (existing) return existing;
+    var id = (window.crypto && crypto.randomUUID)
+      ? crypto.randomUUID()
+      : 'dev-' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+    storageSet('fl_device_id', id);
+    return id;
+  }
+
+  // ---------- Which plan does this visitor get? ----------
+  // You only reach a dashboard by clicking a plan on the homepage first
+  // (firstline-landing.html links here as ?plan=starter/growth/full). That
+  // choice is remembered so reloading keeps you on the same plan — there's
+  // no free switching between plans from inside the dashboard itself.
+  var params = new URLSearchParams(window.location.search);
+  var queryPlan = params.get('plan');
+  var planKey;
+  if (PLANS[queryPlan]) {
+    planKey = queryPlan;
+    storageSet('fl_selected_plan', planKey);
+  } else {
+    planKey = storageGet('fl_selected_plan');
+  }
+
+  if (!PLANS[planKey]) {
+    document.getElementById('gateScreen').style.display = 'flex';
+    return; // no plan selected yet — stop here, don't init the dashboard
+  }
+
+  document.getElementById('dashboardShell').style.display = '';
+  var plan = PLANS[planKey];
+  var storagePrefix = 'fl_dash_' + planKey + '_';
+
+  document.title = 'Firstline — ' + plan.label + ' Dashboard';
+  document.getElementById('ovPlanLine').textContent = plan.label + ' plan';
+
+  // ---------- Feature checklist (overview) ----------
+  var featureList = document.getElementById('featureList');
+  Object.keys(FEATURE_LABELS).forEach(function (key) {
+    var included = !!plan.features[key];
+    var li = document.createElement('li');
+    li.className = included ? 'included' : 'locked';
+    li.innerHTML = '<span class="mark">' + (included ? '✓' : '—') + '</span><span>' + FEATURE_LABELS[key] + '</span>';
+    featureList.appendChild(li);
+  });
+
+  // ---------- Sidebar nav + panel switching ----------
+  var navItems = Array.from(document.querySelectorAll('.nav-item'));
+  var panels = Array.from(document.querySelectorAll('.panel'));
+
+  navItems.forEach(function (item) {
+    var section = item.getAttribute('data-section');
+    var isFeature = FEATURE_LABELS.hasOwnProperty(section);
+    var locked = isFeature && !plan.features[section];
+    if (locked) {
+      item.innerHTML = '<span>' + item.textContent + '</span><span class="lock-mark">locked</span>';
+      item.classList.add('locked');
+    }
+    item.addEventListener('click', function () {
+      window.location.hash = section;
+    });
+  });
+
+  function showSection(section) {
+    var isFeature = FEATURE_LABELS.hasOwnProperty(section);
+    var locked = isFeature && !plan.features[section];
+    var targetPanel = locked ? 'locked' : section;
+
+    if (locked) {
+      document.getElementById('lockedTitle').textContent = FEATURE_LABELS[section] + ' isn\'t on your plan yet';
+      var neededPlans = Object.keys(PLANS).filter(function (k) { return PLANS[k].features[section]; });
+      var neededLabels = neededPlans.map(function (k) { return PLANS[k].label; }).join(' or ');
+      document.getElementById('lockedBody').textContent = neededLabels
+        ? 'This is included on the ' + neededLabels + ' plan' + (neededPlans.length > 1 ? 's' : '') + '.'
+        : 'This feature isn\'t included on your current plan.';
+    }
+
+    panels.forEach(function (p) { p.classList.toggle('active', p.getAttribute('data-panel') === targetPanel); });
+    navItems.forEach(function (item) { item.classList.toggle('active', item.getAttribute('data-section') === section); });
+  }
+
+  function currentSectionFromHash() {
+    var hash = window.location.hash.replace('#', '');
+    var valid = navItems.some(function (item) { return item.getAttribute('data-section') === hash; });
+    return valid ? hash : 'overview';
+  }
+
+  window.addEventListener('hashchange', function () { showSection(currentSectionFromHash()); });
+  showSection(currentSectionFromHash());
+
+  // ---------- Persistence: load saved values (localStorage first, instantly) ----------
+  document.querySelectorAll('[data-key]').forEach(function (el) {
+    var key = storagePrefix + el.getAttribute('data-key');
+    var saved = storageGet(key);
+    if (saved !== null) el.value = saved;
+  });
+  document.querySelectorAll('[data-toggle]').forEach(function (el) {
+    var key = storagePrefix + el.getAttribute('data-toggle');
+    var saved = storageGet(key);
+    if (saved !== null) el.checked = saved === 'true';
+    el.addEventListener('change', function () {
+      storageSet(key, el.checked);
+      postSettings(planKey, makeFieldObj(el.getAttribute('data-toggle'), el.checked));
+    });
+  });
+
+  // Field names sent to the backend match the data-key/data-toggle
+  // attributes directly (e.g. "website_businessName") — no per-plan prefix,
+  // since the plan itself is stored alongside settings server-side.
+  function makeFieldObj(name, value) {
+    var obj = {};
+    obj[name] = value;
+    return obj;
+  }
+
+  function postSettings(planForSave, fields) {
+    fetch(BACKEND_API_URL + '/api/dashboard-settings', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ device: getDeviceId(), plan: planForSave, settings: fields })
+    }).catch(function () { /* offline/unreachable — localStorage already has it */ });
+  }
+
+  // Once the backend responds, its data is treated as the source of truth
+  // (it's what actually persists across browsers/devices) and overrides
+  // whatever localStorage rendered first, so the UI doesn't sit stale.
+  fetch(BACKEND_API_URL + '/api/dashboard-settings?device=' + encodeURIComponent(getDeviceId()))
+    .then(function (res) { return res.ok ? res.json() : null; })
+    .then(function (data) {
+      if (!data || !data.settings) return;
+      Object.keys(data.settings).forEach(function (name) {
+        var value = data.settings[name];
+        var keyEl = document.querySelector('[data-key="' + name + '"]');
+        var toggleEl = document.querySelector('[data-toggle="' + name + '"]');
+        if (keyEl) keyEl.value = value;
+        if (toggleEl) toggleEl.checked = value === true;
+      });
+    })
+    .catch(function () { /* backend not running locally — localStorage values stand */ });
+
+  // ---------- Save buttons ----------
+  document.querySelectorAll('[data-save]').forEach(function (btn) {
+    var section = btn.getAttribute('data-save');
+    btn.addEventListener('click', function () {
+      var fields = {};
+      document.querySelectorAll('.panel[data-panel="' + section + '"] [data-key]').forEach(function (el) {
+        var name = el.getAttribute('data-key');
+        storageSet(storagePrefix + name, el.value);
+        fields[name] = el.value;
+      });
+      postSettings(planKey, fields);
+      var note = document.querySelector('[data-note="' + section + '"]');
+      if (note) {
+        note.classList.add('show');
+        setTimeout(function () { note.classList.remove('show'); }, 1800);
+      }
+    });
+  });
+
+  // ---------- Copy snippet ----------
+  var copyBtn = document.getElementById('copySnippetBtn');
+  if (copyBtn) {
+    copyBtn.addEventListener('click', function () {
+      var box = document.querySelector('[data-panel="chatWidget"] .code-box');
+      if (!box) return;
+      var text = box.textContent;
+      var done = function () {
+        var original = copyBtn.textContent;
+        copyBtn.textContent = 'Copied!';
+        setTimeout(function () { copyBtn.textContent = original; }, 1500);
+      };
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(done).catch(function () { fallbackCopy(text, done); });
+      } else {
+        fallbackCopy(text, done);
+      }
+    });
+  }
+
+  function fallbackCopy(text, done) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    try { document.execCommand('copy'); done(); } catch (e) { /* clipboard unavailable — button just won't confirm */ }
+    document.body.removeChild(ta);
+  }
+})();
+</script>
+</body>
+</html>

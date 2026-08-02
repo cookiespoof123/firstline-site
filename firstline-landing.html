@@ -1,0 +1,1444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Firstline — Every lead answered. Every time.</title>
+<meta name="description" content="Firstline helps small businesses stop losing leads with AI-powered missed-call text-back, lead capture, and reporting.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #14121F;
+    --ink-light: #1D1930;
+    --cream: #F2EFFB;
+    --cream-2: #E3DDF3;
+    --rust: #7C5CFC;
+    --rust-light: #9B87FF;
+    --gold: #4C8DFF;
+    --border-dark: #332C4D;
+    --border-cream: #D6CEEC;
+
+    --serif: 'Fraunces', serif;
+    --sans: 'Inter', sans-serif;
+    --mono: 'JetBrains Mono', monospace;
+
+    --nav-height: 76px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html {
+    scroll-behavior: auto; /* JS handles smooth scroll with nav offset */
+  }
+
+  body {
+    font-family: var(--sans);
+    background: var(--ink);
+    color: var(--cream);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  img, svg { display: block; max-width: 100%; }
+
+  a { color: inherit; text-decoration: none; }
+
+  h1, h2, h3, h4 { font-family: var(--serif); font-weight: 500; line-height: 1.15; }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gold);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .wrap {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 1.75rem;
+  }
+
+  .pulse-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--rust-light);
+    position: relative;
+    flex-shrink: 0;
+  }
+  .pulse-dot::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    background: var(--rust-light);
+    opacity: 0.5;
+    animation: pulse 1.8s ease-out infinite;
+  }
+  @keyframes pulse {
+    0% { transform: scale(0.8); opacity: 0.6; }
+    100% { transform: scale(2.4); opacity: 0; }
+  }
+
+  /* ---------- Buttons ---------- */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-family: var(--sans);
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 0.9rem 1.6rem;
+    border-radius: 4px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    white-space: nowrap;
+  }
+  .btn:active { transform: translateY(1px); }
+  .btn-primary {
+    background: var(--rust);
+    color: var(--cream);
+  }
+  .btn-primary:hover { background: var(--rust-light); }
+  .btn-outline {
+    background: transparent;
+    color: var(--cream);
+    border-color: var(--border-dark);
+  }
+  .btn-outline:hover { border-color: var(--gold); color: var(--gold); }
+  .btn-cream {
+    background: var(--ink);
+    color: var(--cream);
+  }
+  .btn-cream:hover { background: var(--ink-light); }
+  .btn-on-rust {
+    background: var(--cream);
+    color: var(--rust);
+  }
+  .btn-on-rust:hover { background: var(--cream-2); }
+
+  /* ---------- Nav ---------- */
+  header.nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(22, 20, 15, 0.92);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border-dark);
+    height: var(--nav-height);
+    display: flex;
+    align-items: center;
+  }
+  .nav-inner {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+  }
+  .logo {
+    font-family: var(--serif);
+    font-size: 1.35rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--cream);
+  }
+  .logo .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--rust);
+    display: inline-block;
+  }
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    list-style: none;
+  }
+  .nav-links a {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--cream-2);
+    position: relative;
+    padding: 0.35rem 0;
+    cursor: pointer;
+  }
+  .nav-links a::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 100%;
+    bottom: -2px;
+    height: 2px;
+    background: var(--rust-light);
+    transition: right 0.2s ease;
+  }
+  .nav-links a:hover { color: var(--cream); }
+  .nav-links a.active { color: var(--cream); }
+  .nav-links a.active::after { right: 0; }
+
+  .nav-cta { display: flex; align-items: center; gap: 1rem; }
+  .nav-toggle {
+    display: none;
+    background: none;
+    border: 1px solid var(--border-dark);
+    color: var(--cream);
+    border-radius: 4px;
+    padding: 0.5rem 0.7rem;
+    font-size: 1.1rem;
+    cursor: pointer;
+  }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    padding: 5rem 0 4rem;
+    background:
+      radial-gradient(ellipse 900px 500px at 15% 0%, rgba(124, 92, 252, 0.16), transparent 60%),
+      var(--ink);
+  }
+  .hero-inner {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 3.5rem;
+    align-items: center;
+  }
+  .hero h1 {
+    font-size: clamp(2.4rem, 5vw, 3.6rem);
+    margin-top: 1.1rem;
+    color: var(--cream);
+  }
+  .hero h1 em {
+    font-style: italic;
+    color: var(--rust-light);
+  }
+  .hero p.sub {
+    margin-top: 1.4rem;
+    font-size: 1.1rem;
+    color: var(--cream-2);
+    max-width: 46ch;
+  }
+  .hero-buttons {
+    margin-top: 2.2rem;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  /* ---------- Activity feed card ---------- */
+  .feed-card {
+    background: var(--ink-light);
+    border: 1px solid var(--border-dark);
+    border-radius: 10px;
+    padding: 1.4rem;
+    min-height: 380px;
+  }
+  .feed-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-dark);
+  }
+  .feed-card-head span.label {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--cream-2);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .feed-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+  }
+  .feed-item {
+    background: var(--ink);
+    border: 1px solid var(--border-dark);
+    border-radius: 8px;
+    padding: 0.9rem 1rem;
+    animation: feedIn 0.4s ease;
+  }
+  @keyframes feedIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .feed-item-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 0.6rem;
+  }
+  .feed-item-top .biz {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--cream);
+  }
+  .feed-item-top .time {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--cream-2);
+    opacity: 0.7;
+  }
+  .feed-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+  .feed-step {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    font-size: 0.82rem;
+    color: var(--cream-2);
+  }
+  .feed-step .chip {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--gold);
+    flex-shrink: 0;
+  }
+  .feed-step.done .chip { background: var(--rust-light); }
+  .feed-step .txt strong { color: var(--cream); font-weight: 600; }
+
+  /* ---------- Trust strip ---------- */
+  .trust {
+    border-top: 1px solid var(--border-dark);
+    border-bottom: 1px solid var(--border-dark);
+    padding: 1.1rem 0;
+  }
+  .trust-inner {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem 2.5rem;
+  }
+  .trust-item {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    color: var(--cream-2);
+    letter-spacing: 0.02em;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .trust-item::before {
+    content: '';
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--gold);
+  }
+
+  /* ---------- Problem ---------- */
+  .problem {
+    background: var(--cream);
+    color: var(--ink);
+    padding: 6rem 0;
+    text-align: center;
+  }
+  .problem .wrap { max-width: 800px; }
+  .problem p {
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(1.4rem, 3vw, 1.9rem);
+    line-height: 1.5;
+  }
+  .problem p strong {
+    font-weight: 600;
+    font-style: italic;
+    color: var(--rust);
+  }
+
+  /* ---------- Section shared ---------- */
+  section { padding: 6rem 0; }
+  .section-head {
+    text-align: center;
+    max-width: 680px;
+    margin: 0 auto 3.5rem;
+  }
+  .section-head h2 {
+    font-size: clamp(1.8rem, 3.6vw, 2.5rem);
+    margin-top: 0.8rem;
+  }
+  .dark-section { background: var(--ink); }
+
+  /* ---------- Pillars ---------- */
+  .pillars-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+  }
+  .pillar-card {
+    background: var(--ink-light);
+    border: 1px solid var(--border-dark);
+    border-radius: 10px;
+    padding: 1.8rem 1.6rem;
+  }
+  .pillar-card .num {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--rust-light);
+    margin-bottom: 0.9rem;
+  }
+  .pillar-card h3 {
+    font-size: 1.3rem;
+    margin-bottom: 0.9rem;
+    color: var(--cream);
+  }
+  .pillar-card ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+  .pillar-card li {
+    font-size: 0.9rem;
+    color: var(--cream-2);
+    padding-left: 1rem;
+    position: relative;
+  }
+  .pillar-card li::before {
+    content: '—';
+    position: absolute;
+    left: 0;
+    color: var(--gold);
+  }
+
+  /* ---------- Demo ---------- */
+  .demo-section { background: var(--ink-light); }
+  .demo-widget {
+    max-width: 480px;
+    margin: 0 auto;
+    background: var(--ink);
+    border: 1px solid var(--border-dark);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .demo-header {
+    padding: 1.1rem 1.3rem;
+    border-bottom: 1px solid var(--border-dark);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .demo-header .status-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--rust-light);
+  }
+  .demo-header .title {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 1.05rem;
+  }
+  .demo-messages {
+    height: 340px;
+    overflow-y: auto;
+    padding: 1.1rem 1.3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+  }
+  .msg {
+    max-width: 82%;
+    padding: 0.65rem 0.9rem;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    line-height: 1.45;
+  }
+  .msg.assistant {
+    background: var(--ink-light);
+    border: 1px solid var(--border-dark);
+    align-self: flex-start;
+    border-bottom-left-radius: 3px;
+  }
+  .msg.user {
+    background: var(--rust);
+    color: var(--cream);
+    align-self: flex-end;
+    border-bottom-right-radius: 3px;
+  }
+  .msg.system-note {
+    align-self: center;
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--cream-2);
+    opacity: 0.6;
+    background: none;
+    border: none;
+    text-align: center;
+  }
+  .demo-typing {
+    align-self: flex-start;
+    display: flex;
+    gap: 4px;
+    padding: 0.65rem 0.9rem;
+  }
+  .demo-typing span {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--cream-2);
+    opacity: 0.5;
+    animation: typing 1s infinite ease-in-out;
+  }
+  .demo-typing span:nth-child(2) { animation-delay: 0.15s; }
+  .demo-typing span:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes typing {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+    30% { transform: translateY(-4px); opacity: 1; }
+  }
+  .demo-input-row {
+    display: flex;
+    gap: 0.6rem;
+    padding: 1rem 1.1rem;
+    border-top: 1px solid var(--border-dark);
+  }
+  .demo-input-row input {
+    flex: 1;
+    background: var(--ink-light);
+    border: 1px solid var(--border-dark);
+    border-radius: 6px;
+    padding: 0.7rem 0.9rem;
+    color: var(--cream);
+    font-family: var(--sans);
+    font-size: 0.9rem;
+  }
+  .demo-input-row input:focus { outline: 1px solid var(--gold); }
+  .demo-input-row button {
+    background: var(--rust);
+    color: var(--cream);
+    border: none;
+    border-radius: 6px;
+    padding: 0 1.3rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .demo-input-row button:hover { background: var(--rust-light); }
+  .demo-input-row button:disabled { opacity: 0.5; cursor: not-allowed; }
+  .demo-hint {
+    text-align: center;
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    color: var(--cream-2);
+    opacity: 0.7;
+    margin-top: 1.2rem;
+  }
+
+  /* ---------- Founder note ---------- */
+  .founder {
+    background: var(--cream-2);
+    color: var(--ink);
+    padding: 5.5rem 0;
+    text-align: center;
+  }
+  .founder .wrap { max-width: 720px; }
+  .founder p.quote {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: clamp(1.2rem, 2.6vw, 1.5rem);
+    line-height: 1.6;
+  }
+  .founder .sig {
+    display: inline-block;
+    margin-top: 1.6rem;
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    letter-spacing: 0.04em;
+    color: var(--rust);
+    font-style: normal;
+  }
+
+  /* ---------- How it works ---------- */
+  .how-steps {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2.2rem;
+  }
+  .how-steps::before {
+    content: '';
+    position: absolute;
+    top: 27px;
+    left: 12%;
+    right: 12%;
+    height: 2px;
+    background: var(--border-dark);
+    z-index: 0;
+  }
+  .how-step { position: relative; z-index: 1; text-align: center; }
+  .how-step .circle {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: var(--ink-light);
+    border: 1px solid var(--border-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.2rem;
+    font-family: var(--mono);
+    font-weight: 600;
+    color: var(--rust-light);
+    font-size: 1.1rem;
+  }
+  .how-step h3 {
+    font-size: 1.05rem;
+    margin-bottom: 0.5rem;
+    color: var(--cream);
+  }
+  .how-step p {
+    font-size: 0.88rem;
+    color: var(--cream-2);
+  }
+
+  /* ---------- Report snapshot ---------- */
+  .report-card {
+    max-width: 640px;
+    margin: 0 auto;
+    background: var(--ink-light);
+    border: 1px solid var(--border-dark);
+    border-radius: 12px;
+    padding: 2rem 2.2rem;
+  }
+  .report-card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.6rem;
+    padding-bottom: 1.2rem;
+    border-bottom: 1px solid var(--border-dark);
+  }
+  .report-card-head .tag {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--gold);
+  }
+  .report-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.8rem;
+  }
+  .report-stat { text-align: center; }
+  .report-stat .n {
+    font-family: var(--mono);
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: var(--rust-light);
+  }
+  .report-stat .l {
+    font-size: 0.78rem;
+    color: var(--cream-2);
+    margin-top: 0.3rem;
+  }
+  .report-lines {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    padding-top: 1.2rem;
+    border-top: 1px solid var(--border-dark);
+  }
+  .report-lines p {
+    font-size: 0.92rem;
+    color: var(--cream-2);
+    padding-left: 1.1rem;
+    position: relative;
+  }
+  .report-lines p::before {
+    content: '›';
+    position: absolute;
+    left: 0;
+    color: var(--gold);
+  }
+  .report-lines strong { color: var(--cream); font-weight: 600; }
+
+  /* ---------- Pricing ---------- */
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    align-items: stretch;
+  }
+  .price-card {
+    background: var(--ink-light);
+    border: 1px solid var(--border-dark);
+    border-radius: 12px;
+    padding: 2rem 1.8rem;
+    display: flex;
+    flex-direction: column;
+  }
+  .price-card.featured {
+    border-color: var(--rust);
+    background: linear-gradient(180deg, rgba(124,92,252,0.14), var(--ink-light) 40%);
+    position: relative;
+    transform: translateY(-8px);
+  }
+  .price-badge {
+    position: absolute;
+    top: -13px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--rust);
+    color: var(--cream);
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.35rem 0.8rem;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  .price-card h3 {
+    font-size: 1.2rem;
+    color: var(--cream);
+  }
+  .price-card .price {
+    margin-top: 0.7rem;
+    font-family: var(--serif);
+    font-size: 2.1rem;
+    color: var(--cream);
+  }
+  .price-card .price span {
+    font-family: var(--sans);
+    font-size: 0.95rem;
+    color: var(--cream-2);
+    font-weight: 400;
+  }
+  .price-card ul {
+    list-style: none;
+    margin: 1.6rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    flex: 1;
+  }
+  .price-card li {
+    font-size: 0.88rem;
+    color: var(--cream-2);
+    padding-left: 1.2rem;
+    position: relative;
+  }
+  .price-card li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: var(--rust-light);
+    font-weight: 600;
+  }
+  .price-card .btn { width: 100%; }
+  .pricing-note {
+    text-align: center;
+    margin-top: 2.2rem;
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    color: var(--cream-2);
+  }
+
+  /* ---------- FAQ ---------- */
+  .faq-list {
+    max-width: 720px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+  details {
+    background: var(--ink-light);
+    border: 1px solid var(--border-dark);
+    border-radius: 8px;
+    padding: 1.1rem 1.4rem;
+  }
+  summary {
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--cream);
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::after {
+    content: '+';
+    font-family: var(--mono);
+    color: var(--rust-light);
+    font-size: 1.2rem;
+    margin-left: 1rem;
+  }
+  details[open] summary::after { content: '–'; }
+  details p {
+    margin-top: 0.9rem;
+    font-size: 0.92rem;
+    color: var(--cream-2);
+    line-height: 1.6;
+  }
+
+  /* ---------- Final CTA ---------- */
+  .final-cta {
+    background: var(--rust);
+    color: var(--cream);
+    text-align: center;
+    padding: 5.5rem 0;
+  }
+  .final-cta h2 {
+    font-size: clamp(1.9rem, 4vw, 2.8rem);
+    margin-bottom: 2rem;
+  }
+  .final-cta .btn-on-rust:hover { color: var(--rust); }
+
+  /* ---------- Footer ---------- */
+  footer {
+    background: var(--ink);
+    border-top: 1px solid var(--border-dark);
+    padding: 2.4rem 0;
+  }
+  .footer-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .footer-inner .logo { font-size: 1.1rem; }
+  .footer-inner .contact {
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    color: var(--cream-2);
+  }
+
+  /* ---------- Mobile sticky bar ---------- */
+  .mobile-bar {
+    display: none;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    z-index: 90;
+    background: var(--ink-light);
+    border-top: 1px solid var(--border-dark);
+    padding: 0.8rem 1rem;
+    padding-bottom: calc(0.8rem + env(safe-area-inset-bottom));
+  }
+  .mobile-bar .btn { width: 100%; }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 980px) {
+    .hero-inner { grid-template-columns: 1fr; }
+    .pillars-grid { grid-template-columns: repeat(2, 1fr); }
+    .pricing-grid { grid-template-columns: 1fr; }
+    .price-card.featured { transform: none; }
+    .report-stats { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  @media (max-width: 760px) {
+    .nav-links { display: none; }
+    .nav-toggle { display: inline-flex; }
+    .nav-cta .btn-primary { display: none; }
+    .how-steps { grid-template-columns: 1fr; gap: 2.4rem; }
+    .how-steps::before {
+      top: 12%; bottom: 12%; left: 27px; right: auto;
+      width: 2px; height: auto;
+    }
+    .how-step { display: flex; align-items: flex-start; gap: 1.2rem; text-align: left; }
+    .how-step .circle { margin: 0; flex-shrink: 0; }
+    .pillars-grid { grid-template-columns: 1fr; }
+    section { padding: 4rem 0; }
+    .problem, .founder { padding: 4rem 0; }
+    .mobile-bar { display: block; }
+    body { padding-bottom: 76px; }
+    .report-stats { grid-template-columns: 1fr 1fr; row-gap: 1.4rem; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pulse-dot::after { animation: none; opacity: 0.5; }
+    .feed-item { animation: none; }
+    .demo-typing span { animation: none; opacity: 0.6; }
+    * { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap nav-inner">
+    <a class="logo" data-scroll="top" href="javascript:void(0)">Firstline <span class="dot"></span></a>
+    <ul class="nav-links" id="navLinks">
+      <li><a data-scroll="pillars">What we do</a></li>
+      <li><a data-scroll="demo">Try it live</a></li>
+      <li><a data-scroll="how">How it works</a></li>
+      <li><a data-scroll="pricing">Pricing</a></li>
+    </ul>
+    <div class="nav-cta">
+      <button class="btn btn-primary" data-scroll="cta">Book a call</button>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">☰</button>
+    </div>
+  </div>
+</header>
+
+<section class="hero" id="top">
+  <div class="wrap hero-inner">
+    <div>
+      <span class="eyebrow"><span class="pulse-dot"></span> always answering</span>
+      <h1>Every lead answered.<br><em>Every time.</em></h1>
+      <p class="sub">While your competitors let the phone ring out, Firstline is already texting your lead back, asking the right questions, and getting them on your calendar — before they've even hung up.</p>
+      <div class="hero-buttons">
+        <button class="btn btn-primary" data-scroll="cta">Book a 15-minute call</button>
+        <button class="btn btn-outline" data-scroll="how">See how it works</button>
+      </div>
+    </div>
+
+    <div class="feed-card">
+      <div class="feed-card-head">
+        <span class="label">Live activity</span>
+        <span class="eyebrow" style="color:var(--cream-2)"><span class="pulse-dot" style="background:var(--gold)"></span> streaming</span>
+      </div>
+      <div class="feed-list" id="feedList"></div>
+    </div>
+  </div>
+</section>
+
+<div class="trust">
+  <div class="wrap trust-inner">
+    <span class="trust-item">No long-term contract</span>
+    <span class="trust-item">Live within 5 business days</span>
+    <span class="trust-item">UK-based, one point of contact</span>
+    <span class="trust-item">Cancel anytime</span>
+  </div>
+</div>
+
+<section class="problem">
+  <div class="wrap">
+    <p>Most small businesses lose leads the same way: <strong>the phone rings, nobody picks up, and nobody calls back</strong>. The customer doesn't wait around — they call the next name on the list. Firstline exists so that moment never costs you the job again.</p>
+  </div>
+</section>
+
+<section class="dark-section" id="pillars">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">what we do</span>
+      <h2>Everything runs through one system</h2>
+    </div>
+    <div class="pillars-grid">
+      <div class="pillar-card">
+        <div class="num">01</div>
+        <h3>Presence</h3>
+        <ul>
+          <li>Website built and hosted</li>
+          <li>Automatic review requests</li>
+          <li>Google Business profile upkeep</li>
+        </ul>
+      </div>
+      <div class="pillar-card">
+        <div class="num">02</div>
+        <h3>Lead capture</h3>
+        <ul>
+          <li>Missed-call text-back</li>
+          <li>24/7 chat widget</li>
+          <li>Automatic qualifying questions</li>
+        </ul>
+      </div>
+      <div class="pillar-card">
+        <div class="num">03</div>
+        <h3>Follow-through</h3>
+        <ul>
+          <li>Multi-touch follow-up sequences</li>
+          <li>Hot-lead alerts</li>
+          <li>Nothing left unanswered</li>
+        </ul>
+      </div>
+      <div class="pillar-card">
+        <div class="num">04</div>
+        <h3>Intelligence</h3>
+        <ul>
+          <li>Leads in, booked, response times</li>
+          <li>Review trend tracking</li>
+          <li>No dashboards to learn</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="demo-section" id="demo">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">try it live</span>
+      <h2>Text it like you missed the call</h2>
+    </div>
+
+    <div class="demo-widget">
+      <div class="demo-header">
+        <span class="status-dot"></span>
+        <span class="title">Firstline — live demo</span>
+      </div>
+      <div class="demo-messages" id="demoMessages">
+        <div class="msg assistant">Hey! Sorry we missed your call — this is the text line. What can we help you with?</div>
+      </div>
+      <div class="demo-input-row">
+        <input type="text" id="demoInput" placeholder="Type like a customer texting back…" maxlength="500">
+        <button id="demoSend">Send</button>
+      </div>
+    </div>
+    <p class="demo-hint">This runs on the same AI a real Firstline client uses to text back their leads.</p>
+  </div>
+</section>
+
+<section class="founder">
+  <div class="wrap">
+    <p class="quote">I built Firstline after watching a friend lose a five-figure job because his phone rang while he was under a sink two streets away, and the customer had booked someone else by the time he called back. That's not a sales problem — it's a systems problem, and it's completely fixable. Firstline is the fix I wish every small business already had.</p>
+    <span class="sig">— Founder, Firstline</span>
+  </div>
+</section>
+
+<section class="dark-section" id="how">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">how it works</span>
+      <h2>From missed call to booked job</h2>
+    </div>
+    <div class="how-steps">
+      <div class="how-step">
+        <div class="circle">1</div>
+        <h3>A lead comes in</h3>
+        <p>A call, a missed call, or a message through your site or chat widget.</p>
+      </div>
+      <div class="how-step">
+        <div class="circle">2</div>
+        <h3>Firstline responds within seconds</h3>
+        <p>An automatic text-back starts the conversation before they call your competitor.</p>
+      </div>
+      <div class="how-step">
+        <div class="circle">3</div>
+        <h3>Qualified leads get booked</h3>
+        <p>Answers go straight into your calendar — no back-and-forth needed from you.</p>
+      </div>
+      <div class="how-step">
+        <div class="circle">4</div>
+        <h3>You get a weekly report</h3>
+        <p>Plain English. No dashboard login, no jargon — just what happened and what it means.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="report">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">sample report</span>
+      <h2>Your week, in plain English</h2>
+    </div>
+    <div class="report-card">
+      <div class="report-card-head">
+        <span class="tag">Weekly snapshot</span>
+        <span class="eyebrow" style="color:var(--cream-2)">Jul 21 – Jul 27</span>
+      </div>
+      <div class="report-stats">
+        <div class="report-stat"><div class="n">47</div><div class="l">Leads in</div></div>
+        <div class="report-stat"><div class="n">31</div><div class="l">Booked</div></div>
+        <div class="report-stat"><div class="n">8s</div><div class="l">Avg response</div></div>
+      </div>
+      <div class="report-lines">
+        <p><strong>Google Search</strong> was your top lead source this week, ahead of referrals.</p>
+        <p>Sunday evenings were your slowest response window — worth a look if it keeps happening.</p>
+        <p>You picked up <strong>3 new 5-star reviews</strong>, no extra effort required.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="dark-section" id="pricing">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">pricing</span>
+      <h2>Simple plans, no surprises</h2>
+    </div>
+    <div class="pricing-grid">
+      <div class="price-card">
+        <h3>Starter</h3>
+        <div class="price">£49<span>/month</span></div>
+        <ul>
+          <li>Website built and hosted</li>
+          <li>Automatic review requests</li>
+          <li>Monthly check-in</li>
+        </ul>
+        <a class="btn btn-outline" href="https://buy.stripe.com/test_14A9AM1lB2Ez9tlbIi6Na00">Get started</a>
+      </div>
+      <div class="price-card featured">
+        <span class="price-badge">Most popular</span>
+        <h3>Growth</h3>
+        <div class="price">£149<span>/month</span></div>
+        <ul>
+          <li>Everything in Starter</li>
+          <li>Missed-call text-back</li>
+          <li>24/7 chat widget</li>
+          <li>Automated follow-up sequences</li>
+        </ul>
+        <a class="btn btn-primary" href="https://buy.stripe.com/test_9B6eV61lBa71fRJ4fQ6Na01">Get started</a>
+      </div>
+      <div class="price-card">
+        <h3>Full Service</h3>
+        <div class="price">£299<span>/month</span></div>
+        <ul>
+          <li>Everything in Growth</li>
+          <li>Lead scoring &amp; hot-lead alerts</li>
+          <li>Weekly intelligence report</li>
+          <li>Priority support</li>
+        </ul>
+        <a class="btn btn-outline" href="https://buy.stripe.com/test_6oUaEQ8O33IDfRJ9Aa6Na02">Get started</a>
+      </div>
+    </div>
+    <p class="pricing-note">One-time setup fee of £150–£350 depending on plan. Most businesses are live within 5 business days.</p>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">faq</span>
+      <h2>Questions we get asked a lot</h2>
+    </div>
+    <div class="faq-list">
+      <details>
+        <summary>Will it feel robotic to my customers?</summary>
+        <p>No — the responses are written to read like a real, brief text from your business, not a chatbot script. Most customers never realise the first reply was automatic; they just notice they heard back fast.</p>
+      </details>
+      <details>
+        <summary>What if it books the wrong kind of job?</summary>
+        <p>The qualifying questions are tailored to your business before launch, and anything unclear gets flagged to you rather than auto-booked. You stay in control of what actually lands on your calendar.</p>
+      </details>
+      <details>
+        <summary>How long does setup take?</summary>
+        <p>Most businesses are fully live within 5 business days of signing up, including your website, review requests, and text-back system.</p>
+      </details>
+      <details>
+        <summary>Am I locked into a contract?</summary>
+        <p>No long-term contract on any plan — you can cancel anytime. We'd rather earn the renewal every month than lock you in.</p>
+      </details>
+      <details>
+        <summary>Do I need to change my phone number or website?</summary>
+        <p>No. Firstline works with your existing number and site — we connect to what you already have rather than asking you to switch anything.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section class="final-cta" id="cta">
+  <div class="wrap">
+    <h2>Stop losing leads to voicemail.</h2>
+    <button class="btn btn-on-rust" id="finalCtaBtn">Book a 15-minute call</button>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap footer-inner">
+    <span class="logo">Firstline <span class="dot"></span></span>
+    <span class="contact">hello@firstline.agency</span>
+  </div>
+</footer>
+
+<div class="mobile-bar">
+  <button class="btn btn-primary" data-scroll="cta">Book a 15-minute call</button>
+</div>
+
+<script>
+(function () {
+  var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- Smooth scroll with sticky-nav offset ---------- */
+  function scrollToId(id) {
+    var target = id === 'top' ? document.body : document.getElementById(id);
+    if (!target) return;
+    var navHeight = document.querySelector('header.nav').offsetHeight;
+    var top = (id === 'top' ? 0 : target.getBoundingClientRect().top + window.pageYOffset) - navHeight + 1;
+    window.scrollTo({ top: Math.max(top, 0), behavior: prefersReducedMotion ? 'auto' : 'smooth' });
+  }
+
+  document.querySelectorAll('[data-scroll]').forEach(function (el) {
+    el.addEventListener('click', function () {
+      scrollToId(el.getAttribute('data-scroll'));
+      var navLinks = document.getElementById('navLinks');
+      if (navLinks.classList.contains('open')) navLinks.classList.remove('open');
+    });
+  });
+
+  var finalCtaBtn = document.getElementById('finalCtaBtn');
+  if (finalCtaBtn) finalCtaBtn.addEventListener('click', function () { scrollToId('cta'); });
+
+  /* ---------- Mobile nav toggle ---------- */
+  var navToggle = document.getElementById('navToggle');
+  var navLinksEl = document.getElementById('navLinks');
+  if (navToggle) {
+    navToggle.addEventListener('click', function () {
+      var isOpen = navLinksEl.classList.toggle('open');
+      if (isOpen) {
+        navLinksEl.style.cssText = 'display:flex;flex-direction:column;position:absolute;top:' +
+          document.querySelector('header.nav').offsetHeight + 'px;left:0;right:0;background:var(--ink);' +
+          'padding:1.2rem 1.75rem;border-bottom:1px solid var(--border-dark);gap:1.2rem;';
+      } else {
+        navLinksEl.removeAttribute('style');
+      }
+    });
+  }
+
+  /* ---------- Scroll-spy active nav state ---------- */
+  var spySections = ['pillars', 'demo', 'how', 'pricing'];
+  var navAnchors = {};
+  document.querySelectorAll('.nav-links a[data-scroll]').forEach(function (a) {
+    navAnchors[a.getAttribute('data-scroll')] = a;
+  });
+
+  if ('IntersectionObserver' in window) {
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        var link = navAnchors[entry.target.id];
+        if (!link) return;
+        if (entry.isIntersecting) {
+          Object.values(navAnchors).forEach(function (a) { a.classList.remove('active'); });
+          link.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-40% 0px -55% 0px', threshold: 0 });
+
+    spySections.forEach(function (id) {
+      var section = document.getElementById(id);
+      if (section) observer.observe(section);
+    });
+  }
+
+  /* ---------- Live activity feed simulation ---------- */
+  var feedList = document.getElementById('feedList');
+
+  var scenarios = [
+    {
+      biz: 'Riverside Plumbing',
+      steps: [
+        { label: 'Missed call', delay: 0 },
+        { label: 'Texted back in <strong>6 sec</strong>', delay: 700 },
+        { label: 'Qualified — burst pipe, needs today', delay: 1500 },
+        { label: 'Booked <strong>4:30pm</strong>', delay: 1600 }
+      ]
+    },
+    {
+      biz: 'Bright Smile Dental',
+      steps: [
+        { label: 'Missed call', delay: 0 },
+        { label: 'Texted back in <strong>4 sec</strong>', delay: 700 },
+        { label: 'Qualified — new patient, cleaning', delay: 1400 },
+        { label: 'Booked <strong>Tue 10am</strong>', delay: 1500 }
+      ]
+    },
+    {
+      biz: 'Oakview Electrical',
+      steps: [
+        { label: 'Missed call', delay: 0 },
+        { label: 'Texted back in <strong>9 sec</strong>', delay: 800 },
+        { label: 'Qualified — no power, urgent', delay: 1500 },
+        { label: 'Booked <strong>tonight, 7pm</strong>', delay: 1400 }
+      ]
+    },
+    {
+      biz: 'Coastal Cleaning Co.',
+      steps: [
+        { label: 'Missed call', delay: 0 },
+        { label: 'Texted back in <strong>5 sec</strong>', delay: 700 },
+        { label: 'Qualified — end-of-tenancy clean', delay: 1400 },
+        { label: 'Booked <strong>Fri 9am</strong>', delay: 1500 }
+      ]
+    },
+    {
+      biz: 'Summit Roofing',
+      steps: [
+        { label: 'Missed call', delay: 0 },
+        { label: 'Texted back in <strong>7 sec</strong>', delay: 750 },
+        { label: 'Qualified — storm damage, needs quote', delay: 1500 },
+        { label: 'Booked <strong>Mon 2pm</strong>', delay: 1500 }
+      ]
+    }
+  ];
+
+  var usedIndexes = [];
+  function nextScenario() {
+    if (usedIndexes.length >= scenarios.length) usedIndexes = [];
+    var idx;
+    do { idx = Math.floor(Math.random() * scenarios.length); } while (usedIndexes.indexOf(idx) !== -1);
+    usedIndexes.push(idx);
+    return scenarios[idx];
+  }
+
+  function nowLabel() {
+    var d = new Date();
+    var h = d.getHours() % 12 || 12;
+    var m = d.getMinutes().toString().padStart(2, '0');
+    return h + ':' + m + (d.getHours() >= 12 ? 'pm' : 'am');
+  }
+
+  function trimFeed() {
+    while (feedList.children.length > 3) {
+      feedList.removeChild(feedList.lastElementChild);
+    }
+  }
+
+  function addCard(scenario) {
+    var card = document.createElement('div');
+    card.className = 'feed-item';
+    card.innerHTML =
+      '<div class="feed-item-top"><span class="biz">' + scenario.biz + '</span>' +
+      '<span class="time">' + nowLabel() + '</span></div>' +
+      '<div class="feed-steps"></div>';
+    feedList.insertBefore(card, feedList.firstChild);
+    trimFeed();
+
+    var stepsEl = card.querySelector('.feed-steps');
+    var elapsed = 0;
+    scenario.steps.forEach(function (step) {
+      elapsed += step.delay;
+      var render = function () {
+        var row = document.createElement('div');
+        row.className = 'feed-step done';
+        row.innerHTML = '<span class="chip"></span><span class="txt">' + step.label + '</span>';
+        stepsEl.appendChild(row);
+      };
+      if (prefersReducedMotion) {
+        render();
+      } else {
+        setTimeout(render, elapsed);
+      }
+    });
+  }
+
+  // Seed with the full example straight away, then two more already resolved.
+  var seed = scenarios.slice(0, 3);
+  seed.forEach(function (s, i) {
+    var card = document.createElement('div');
+    card.className = 'feed-item';
+    card.innerHTML =
+      '<div class="feed-item-top"><span class="biz">' + s.biz + '</span>' +
+      '<span class="time">' + nowLabel() + '</span></div>' +
+      '<div class="feed-steps">' +
+      s.steps.map(function (step) {
+        return '<div class="feed-step done"><span class="chip"></span><span class="txt">' + step.label + '</span></div>';
+      }).join('') +
+      '</div>';
+    feedList.appendChild(card);
+  });
+  usedIndexes = [0, 1, 2];
+
+  if (!prefersReducedMotion) {
+    setInterval(function () {
+      addCard(nextScenario());
+    }, 6500);
+  }
+
+  /* ---------- Live demo chat ---------- */
+  // This calls a real backend endpoint (POST /api/demo-chat) that runs on
+  // the Firstline Express server (see firstline-backend/server.js) and
+  // proxies to https://api.anthropic.com/v1/messages using ANTHROPIC_API_KEY
+  // from that server's own environment. The key never touches this page —
+  // update DEMO_API_URL to wherever that backend is deployed.
+  var DEMO_API_URL = 'https://firstline-backend.onrender.com/api/demo-chat';
+
+  var demoMessages = document.getElementById('demoMessages');
+  var demoInput = document.getElementById('demoInput');
+  var demoSend = document.getElementById('demoSend');
+  var demoHistory = [];
+  var demoBusy = false;
+
+  function appendMsg(role, text) {
+    var el = document.createElement('div');
+    el.className = 'msg ' + role;
+    el.textContent = text;
+    demoMessages.appendChild(el);
+    demoMessages.scrollTop = demoMessages.scrollHeight;
+    return el;
+  }
+
+  function appendNote(text) {
+    var el = document.createElement('div');
+    el.className = 'msg system-note';
+    el.textContent = text;
+    demoMessages.appendChild(el);
+    demoMessages.scrollTop = demoMessages.scrollHeight;
+  }
+
+  function showTyping() {
+    var el = document.createElement('div');
+    el.className = 'demo-typing';
+    el.id = 'demoTyping';
+    el.innerHTML = '<span></span><span></span><span></span>';
+    demoMessages.appendChild(el);
+    demoMessages.scrollTop = demoMessages.scrollHeight;
+  }
+
+  function hideTyping() {
+    var el = document.getElementById('demoTyping');
+    if (el) el.remove();
+  }
+
+  function fallbackReply(userText) {
+    var lower = userText.toLowerCase();
+    if (/today|now|urgent|asap|emergency/.test(lower)) {
+      return "Got it — sounds urgent. What's the address, and is anyone on site right now?";
+    }
+    if (/tomorrow|next week|when|available/.test(lower)) {
+      return "We can likely fit you in this week. What's the job, roughly, and what area are you in?";
+    }
+    return "Thanks for the message! Could you tell me a bit more about what you need done?";
+  }
+
+  async function sendDemoMessage() {
+    var text = demoInput.value.trim();
+    if (!text || demoBusy) return;
+
+    demoBusy = true;
+    demoSend.disabled = true;
+    appendMsg('user', text);
+    demoInput.value = '';
+    showTyping();
+
+    var historyForRequest = demoHistory.slice();
+    demoHistory.push({ role: 'user', content: text });
+
+    try {
+      var res = await fetch(DEMO_API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: text, history: historyForRequest })
+      });
+
+      if (!res.ok) throw new Error('Demo backend responded with ' + res.status);
+      var data = await res.json();
+      hideTyping();
+
+      var reply = (data && data.reply) ? data.reply : fallbackReply(text);
+      appendMsg('assistant', reply);
+      demoHistory.push({ role: 'assistant', content: reply });
+    } catch (err) {
+      hideTyping();
+      var reply = fallbackReply(text);
+      appendMsg('assistant', reply);
+      appendNote('(demo backend unreachable — showing a simulated reply)');
+      demoHistory.push({ role: 'assistant', content: reply });
+    } finally {
+      demoBusy = false;
+      demoSend.disabled = false;
+      demoInput.focus();
+    }
+  }
+
+  demoSend.addEventListener('click', sendDemoMessage);
+  demoInput.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') sendDemoMessage();
+  });
+})();
+</script>
+</body>
+</html>
