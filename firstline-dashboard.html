@@ -336,11 +336,12 @@
           <h1 id="ovBizName">Riverside Plumbing <span style="color:var(--cream-2); font-weight:400;">(sample)</span></h1>
           <div class="sub" id="ovPlanLine">Starter plan</div>
           <div class="status-badge" id="statusBadge"><span class="chip"></span> Active (demo)</div>
+          <div id="billingLinkRow" style="display:none; margin-top:0.8rem;"><a class="btn btn-outline" id="manageBillingBtn" style="cursor:pointer;">Manage billing</a></div>
         </div>
 
         <div class="quick-stats">
-          <div class="quick-stat"><div class="n">12</div><div class="l">Leads this week</div></div>
-          <div class="quick-stat"><div class="n">8s</div><div class="l">Avg response time</div></div>
+          <div class="quick-stat"><div class="n" id="ovLeadsStat">12</div><div class="l">Leads this week</div></div>
+          <div class="quick-stat"><div class="n" id="ovResponseStat">8s</div><div class="l">Avg response time</div></div>
           <div class="quick-stat"><div class="n">4</div><div class="l">Reviews requested</div></div>
         </div>
 
@@ -439,8 +440,8 @@
         <h2>Missed-call text-back</h2>
         <p class="panel-sub">Automatically text anyone whose call you miss.</p>
         <div class="quick-stats" style="grid-template-columns: repeat(2, 1fr);">
-          <div class="quick-stat"><div class="n">12</div><div class="l">Leads this week</div></div>
-          <div class="quick-stat"><div class="n">8s</div><div class="l">Avg response time</div></div>
+          <div class="quick-stat"><div class="n" id="mcLeadsStat">12</div><div class="l">Leads this week</div></div>
+          <div class="quick-stat"><div class="n" id="mcResponseStat">8s</div><div class="l">Avg response time</div></div>
         </div>
         <div class="block">
           <div class="row-toggle">
@@ -598,12 +599,12 @@
         <p class="panel-sub">Your week, in plain English — no dashboard login required to get it.</p>
         <div class="block">
           <div class="report-stats">
-            <div class="report-stat"><div class="n">47</div><div class="l">Leads in</div></div>
-            <div class="report-stat"><div class="n">31</div><div class="l">Booked</div></div>
-            <div class="report-stat"><div class="n">8s</div><div class="l">Avg response</div></div>
+            <div class="report-stat"><div class="n" id="wrLeadsStat">47</div><div class="l">Leads in</div></div>
+            <div class="report-stat"><div class="n" id="wrBookedStat">31</div><div class="l">Booked</div></div>
+            <div class="report-stat"><div class="n" id="wrResponseStat">8s</div><div class="l">Avg response</div></div>
             <div class="report-stat"><div class="n">6</div><div class="l">New reviews</div></div>
           </div>
-          <p class="demo-note">Sample numbers shown for now — once you're live, these reflect your real activity.</p>
+          <p class="demo-note" id="weeklyReportDemoNote">Sample numbers shown for now — once you're live, these reflect your real activity.</p>
         </div>
         <div class="block">
           <div class="row-toggle">
@@ -775,13 +776,41 @@
     // never had features zeroed out server-side, so gate on status too,
     // not just the feature flag, otherwise a lapsed account would still see
     // this as if it were live.
-    if (realClient.status === 'active' && realClient.features.missedCallTextBack) {
+    var needsLeadData = realClient.features.missedCallTextBack || realClient.features.weeklyReport || realClient.features.leadScoringAlerts;
+    if (realClient.status === 'active' && needsLeadData) {
       fetch(BACKEND_API_URL + '/api/my-leads', { headers: { 'Authorization': 'Bearer ' + sessionToken } })
         .then(function (res) { return res.ok ? res.json() : null; })
         .then(function (data) {
+          if (!data) return;
+
+          function fmtResponse(seconds) {
+            if (seconds === null || seconds === undefined) return '—';
+            return seconds < 60 ? seconds + 's' : Math.round(seconds / 60) + 'm';
+          }
+
+          // Overview + Missed-call text-back quick stats share the same
+          // numbers — real lead volume/response time, not sample data.
+          ['ovLeadsStat', 'mcLeadsStat'].forEach(function (id) {
+            var el = document.getElementById(id);
+            if (el) el.textContent = data.stats.leadsIn7Days;
+          });
+          ['ovResponseStat', 'mcResponseStat'].forEach(function (id) {
+            var el = document.getElementById(id);
+            if (el) el.textContent = fmtResponse(data.stats.avgResponseSeconds);
+          });
+
+          if (realClient.features.weeklyReport) {
+            document.getElementById('wrLeadsStat').textContent = data.stats.leadsIn7Days;
+            document.getElementById('wrBookedStat').textContent = data.stats.booked;
+            document.getElementById('wrResponseStat').textContent = fmtResponse(data.stats.avgResponseSeconds);
+            document.getElementById('weeklyReportDemoNote').textContent = 'Reviews aren\'t tracked automatically yet — everything else here is your real activity.';
+          }
+
+          if (!realClient.features.missedCallTextBack) return;
+
           var container = document.getElementById('leadsContainer');
           var note = document.getElementById('leadsDemoNote');
-          if (!data || !container) return;
+          if (!container) return;
           note.style.display = 'none';
 
           if (data.leads.length === 0) {
@@ -818,6 +847,22 @@
   } else {
     topbarActionBtn.addEventListener('click', function () {
       window.location.href = 'firstline-landing.html';
+    });
+  }
+
+  if (isRealSession && realClient.status === 'active') {
+    var billingRow = document.getElementById('billingLinkRow');
+    billingRow.style.display = 'block';
+    document.getElementById('manageBillingBtn').addEventListener('click', function () {
+      fetch(BACKEND_API_URL + '/api/create-portal-session', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + sessionToken }
+      })
+        .then(function (res) { return res.ok ? res.json() : null; })
+        .then(function (data) {
+          if (data && data.url) window.location.href = data.url;
+        })
+        .catch(function () { /* portal just doesn't open — button stays clickable to retry */ });
     });
   }
 
@@ -875,55 +920,72 @@
   window.addEventListener('hashchange', function () { showSection(currentSectionFromHash()); });
   showSection(currentSectionFromHash());
 
-  // ---------- Persistence: load saved values (localStorage first, instantly) ----------
-  document.querySelectorAll('[data-key]').forEach(function (el) {
-    var key = storagePrefix + el.getAttribute('data-key');
-    var saved = storageGet(key);
-    if (saved !== null) el.value = saved;
-  });
-  document.querySelectorAll('[data-toggle]').forEach(function (el) {
-    var key = storagePrefix + el.getAttribute('data-toggle');
-    var saved = storageGet(key);
-    if (saved !== null) el.checked = saved === 'true';
-    el.addEventListener('change', function () {
-      storageSet(key, el.checked);
-      postSettings(planKey, makeFieldObj(el.getAttribute('data-toggle'), el.checked));
+  // ---------- Persistence: load saved values ----------
+  // Real clients: settings already came back with /api/me, and saves go to
+  // their own account (POST /api/my-settings). Preview mode: settings are
+  // keyed on the anonymous device id (see getDeviceId above), loaded from
+  // localStorage first for an instant render, then overridden by whatever
+  // the backend has once that responds.
+  function applySettingsToFields(settingsObj) {
+    Object.keys(settingsObj).forEach(function (name) {
+      var value = settingsObj[name];
+      var keyEl = document.querySelector('[data-key="' + name + '"]');
+      var toggleEl = document.querySelector('[data-toggle="' + name + '"]');
+      if (keyEl) keyEl.value = value;
+      if (toggleEl) toggleEl.checked = value === true;
     });
-  });
+  }
 
-  // Field names sent to the backend match the data-key/data-toggle
-  // attributes directly (e.g. "website_businessName") — no per-plan prefix,
-  // since the plan itself is stored alongside settings server-side.
   function makeFieldObj(name, value) {
     var obj = {};
     obj[name] = value;
     return obj;
   }
 
-  function postSettings(planForSave, fields) {
-    fetch(BACKEND_API_URL + '/api/dashboard-settings', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ device: getDeviceId(), plan: planForSave, settings: fields })
-    }).catch(function () { /* offline/unreachable — localStorage already has it */ });
+  function postSettings(fields) {
+    if (isRealSession) {
+      fetch(BACKEND_API_URL + '/api/my-settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + sessionToken },
+        body: JSON.stringify({ settings: fields })
+      }).catch(function () { /* not persisted this save — nothing else we can do without a backend */ });
+    } else {
+      fetch(BACKEND_API_URL + '/api/dashboard-settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ device: getDeviceId(), plan: planKey, settings: fields })
+      }).catch(function () { /* offline/unreachable — localStorage already has it */ });
+    }
   }
 
-  // Once the backend responds, its data is treated as the source of truth
-  // (it's what actually persists across browsers/devices) and overrides
-  // whatever localStorage rendered first, so the UI doesn't sit stale.
-  fetch(BACKEND_API_URL + '/api/dashboard-settings?device=' + encodeURIComponent(getDeviceId()))
-    .then(function (res) { return res.ok ? res.json() : null; })
-    .then(function (data) {
-      if (!data || !data.settings) return;
-      Object.keys(data.settings).forEach(function (name) {
-        var value = data.settings[name];
-        var keyEl = document.querySelector('[data-key="' + name + '"]');
-        var toggleEl = document.querySelector('[data-toggle="' + name + '"]');
-        if (keyEl) keyEl.value = value;
-        if (toggleEl) toggleEl.checked = value === true;
-      });
-    })
-    .catch(function () { /* backend not running locally — localStorage values stand */ });
+  if (isRealSession) {
+    applySettingsToFields(realClient.settings || {});
+  } else {
+    document.querySelectorAll('[data-key]').forEach(function (el) {
+      var saved = storageGet(storagePrefix + el.getAttribute('data-key'));
+      if (saved !== null) el.value = saved;
+    });
+    document.querySelectorAll('[data-toggle]').forEach(function (el) {
+      var saved = storageGet(storagePrefix + el.getAttribute('data-toggle'));
+      if (saved !== null) el.checked = saved === 'true';
+    });
+
+    // Once the backend responds, its data is the source of truth (it's what
+    // actually persists across browsers/devices) and overrides whatever
+    // localStorage rendered first, so the UI doesn't sit stale.
+    fetch(BACKEND_API_URL + '/api/dashboard-settings?device=' + encodeURIComponent(getDeviceId()))
+      .then(function (res) { return res.ok ? res.json() : null; })
+      .then(function (data) { if (data && data.settings) applySettingsToFields(data.settings); })
+      .catch(function () { /* backend not running locally — localStorage values stand */ });
+  }
+
+  document.querySelectorAll('[data-toggle]').forEach(function (el) {
+    el.addEventListener('change', function () {
+      var name = el.getAttribute('data-toggle');
+      if (!isRealSession) storageSet(storagePrefix + name, el.checked);
+      postSettings(makeFieldObj(name, el.checked));
+    });
+  });
 
   // ---------- Save buttons ----------
   document.querySelectorAll('[data-save]').forEach(function (btn) {
@@ -932,10 +994,10 @@
       var fields = {};
       document.querySelectorAll('.panel[data-panel="' + section + '"] [data-key]').forEach(function (el) {
         var name = el.getAttribute('data-key');
-        storageSet(storagePrefix + name, el.value);
+        if (!isRealSession) storageSet(storagePrefix + name, el.value);
         fields[name] = el.value;
       });
-      postSettings(planKey, fields);
+      postSettings(fields);
       var note = document.querySelector('[data-note="' + section + '"]');
       if (note) {
         note.classList.add('show');
