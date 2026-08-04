@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Firstline — You're all set</title>
-<meta name="description" content="Your Firstline subscription is active — check your email for your dashboard link.">
+<title>Firstline — Set your password</title>
+<meta name="description" content="Set a password to secure your Firstline account.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500,600;1,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -39,7 +39,7 @@
     padding: 2rem;
   }
 
-  .card { max-width: 480px; width: 100%; text-align: center; }
+  .card { max-width: 440px; width: 100%; text-align: center; }
 
   .logo {
     font-family: var(--serif);
@@ -48,7 +48,7 @@
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    margin-bottom: 2.5rem;
+    margin-bottom: 2.2rem;
   }
   .logo .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--rust); display: inline-block; }
 
@@ -61,70 +61,149 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 1.8rem;
+    margin: 0 auto 1.6rem;
     font-size: 1.6rem;
     color: var(--rust-light);
   }
 
-  h1 { font-family: var(--serif); font-weight: 500; font-size: 1.9rem; margin: 0 0 0.9rem; }
+  h1 { font-family: var(--serif); font-weight: 500; font-size: 1.8rem; margin: 0 0 0.7rem; }
+  p { color: var(--cream-2); font-size: 0.95rem; margin: 0 0 1.6rem; }
 
-  p { color: var(--cream-2); font-size: 1rem; margin: 0 0 1.6rem; }
-  p.small { font-size: 0.88rem; }
-
-  .steps {
-    text-align: left;
+  .field { text-align: left; margin-bottom: 1.1rem; }
+  .field label { display: block; font-size: 0.82rem; color: var(--cream-2); margin-bottom: 0.4rem; }
+  .field input {
+    width: 100%;
     background: var(--ink-light);
     border: 1px solid var(--border-dark);
-    border-radius: 10px;
-    padding: 1.4rem 1.6rem;
-    margin-bottom: 1.8rem;
+    border-radius: 6px;
+    padding: 0.8rem 1rem;
+    color: var(--cream);
+    font-family: var(--sans);
+    font-size: 0.95rem;
   }
-  .steps li { font-size: 0.92rem; color: var(--cream-2); margin-bottom: 0.6rem; }
-  .steps li:last-child { margin-bottom: 0; }
-  .steps li strong { color: var(--cream); }
+  .field input:focus { outline: 1px solid var(--rust-light); }
 
   .btn {
     display: inline-flex;
+    width: 100%;
     align-items: center;
     justify-content: center;
-    gap: 0.5rem;
+    background: var(--rust);
+    color: var(--cream);
+    border: none;
+    border-radius: 6px;
+    padding: 0.85rem 1rem;
     font-weight: 600;
     font-size: 0.95rem;
-    padding: 0.85rem 1.6rem;
-    border-radius: 6px;
-    border: 1px solid var(--border-dark);
-    color: var(--cream);
+    cursor: pointer;
     text-decoration: none;
-    background: transparent;
+    font-family: var(--sans);
+    margin-top: 0.4rem;
   }
-  .btn:hover { border-color: var(--gold); color: var(--gold); }
+  .btn:hover { background: var(--rust-light); }
+  .btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
   .note {
-    margin-top: 1.6rem;
+    margin-top: 1.2rem;
     font-family: var(--mono);
-    font-size: 0.76rem;
+    font-size: 0.78rem;
     color: var(--cream-2);
-    opacity: 0.65;
+    min-height: 1.2rem;
   }
+
+  #errorState, #successState { display: none; }
 </style>
 </head>
 <body>
   <div class="card">
     <div class="logo">Firstline <span class="dot"></span></div>
-    <div class="check">✓</div>
-    <h1>You're all set</h1>
-    <p>Your subscription is active. We've sent a login link to the email you paid with — click it to get into your dashboard.</p>
 
-    <ul class="steps">
-      <li><strong>1.</strong> Check your inbox (and spam folder, just in case) for an email from Firstline</li>
-      <li><strong>2.</strong> Click the login link — it works for 15 minutes</li>
-      <li><strong>3.</strong> You'll land straight in your dashboard, already set up for your plan</li>
-    </ul>
+    <div id="formState">
+      <div class="check">✓</div>
+      <h1 id="heading">You're all set</h1>
+      <p id="subtext">Set a password so you can get into your dashboard now and log back in anytime.</p>
 
-    <p class="small">Link expired, or nothing arrived after a few minutes? Request a fresh one below.</p>
-    <a class="btn" href="https://firstline-backend.onrender.com/login">Go to login</a>
+      <form id="pwForm">
+        <div class="field">
+          <label>New password</label>
+          <input type="password" id="password" minlength="8" required autocomplete="new-password">
+        </div>
+        <div class="field">
+          <label>Confirm password</label>
+          <input type="password" id="confirmPassword" minlength="8" required autocomplete="new-password">
+        </div>
+        <button class="btn" type="submit" id="submitBtn">Continue to dashboard</button>
+      </form>
+      <p class="note" id="note"></p>
+    </div>
 
-    <p class="note">Questions? Just reply to the onboarding email — a real person reads it.</p>
+    <div id="errorState">
+      <h1>This link isn't valid</h1>
+      <p>It may have expired, or the URL got cut off. Head to the login page to request a fresh one.</p>
+      <a class="btn" href="https://firstline-backend.onrender.com/login">Go to login</a>
+    </div>
   </div>
+
+<script>
+(function () {
+  var BACKEND_API_URL = 'https://firstline-backend.onrender.com';
+  var DASHBOARD_URL = 'https://cookiespoof123.github.io/firstline-site/firstline-dashboard.html';
+
+  var params = new URLSearchParams(window.location.search);
+  var sessionToken = params.get('session');
+  var isReset = params.get('reset') === '1';
+
+  if (!sessionToken) {
+    document.getElementById('formState').style.display = 'none';
+    document.getElementById('errorState').style.display = 'block';
+    return;
+  }
+
+  if (isReset) {
+    document.getElementById('heading').textContent = 'Reset your password';
+    document.getElementById('subtext').textContent = 'Choose a new password for your account.';
+  }
+
+  document.getElementById('pwForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var note = document.getElementById('note');
+    var btn = document.getElementById('submitBtn');
+    var password = document.getElementById('password').value;
+    var confirmPassword = document.getElementById('confirmPassword').value;
+
+    if (password.length < 8) {
+      note.textContent = 'Password must be at least 8 characters.';
+      return;
+    }
+    if (password !== confirmPassword) {
+      note.textContent = "Passwords don't match.";
+      return;
+    }
+
+    btn.disabled = true;
+    note.textContent = 'Saving...';
+
+    fetch(BACKEND_API_URL + '/api/auth/set-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + sessionToken },
+      body: JSON.stringify({ password: password })
+    })
+      .then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
+      .then(function (result) {
+        if (!result.ok) {
+          note.textContent = result.data.error || 'Something went wrong — try again.';
+          btn.disabled = false;
+          return;
+        }
+        try { localStorage.setItem('fl_session_token', sessionToken); } catch (err) { /* falls through to URL param below */ }
+        window.location.href = DASHBOARD_URL + '?session=' + encodeURIComponent(sessionToken);
+      })
+      .catch(function () {
+        note.textContent = 'Something went wrong — try again in a moment.';
+        btn.disabled = false;
+      });
+  });
+})();
+</script>
 </body>
 </html>
